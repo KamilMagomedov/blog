@@ -5,10 +5,6 @@ import { getPostQueryBuilder } from "@/lib/builder";
 import { IGetPostQueryBuilder } from "@/types/Posts";
 import { Metadata } from "next";
 
-interface ISearchParams {
-  page?: string;
-}
-
 export const metadata: Metadata = {
   title: "Development Posts - Learn & Grow",
   description:
@@ -19,9 +15,11 @@ export const metadata: Metadata = {
 const DevelopmentPage = async ({
   searchParams,
 }: {
-  searchParams: ISearchParams;
+  searchParams: Record<string, string | string[] | undefined>;
 }) => {
-  const { page } = searchParams;
+  const page = Array.isArray(searchParams.page)
+    ? searchParams.page[0]
+    : searchParams.page || "1";
   const postQueryBuilder: IGetPostQueryBuilder = getPostQueryBuilder()
     .setPage(page)
     .setLimit(7)
