@@ -39,7 +39,7 @@ const Newsletter: React.FC = () => {
       setError(null);
       setShowMessage(true);
     } catch (err) {
-      setError("Failed to connect to the server.");
+      setError(`Failed to connect to the server ${err}`);
       setShowMessage(true);
     }
   };
@@ -85,12 +85,12 @@ const Newsletter: React.FC = () => {
         </button>
       </form>
       {showMessage && error && (
-        <p className="animate-fadeOut absolute bottom-0 left-0 right-0 top-0 flex h-full w-full items-center justify-center bg-[#000000d1] text-[1.1rem] text-red-500 decoration-solid">
+        <p className="absolute bottom-0 left-0 right-0 top-0 flex h-full w-full animate-fadeOut items-center justify-center bg-[#000000d1] text-[1.1rem] text-red-500 decoration-solid">
           {error}
         </p>
       )}
       {showMessage && success && (
-        <p className="animate-fadeOut absolute bottom-0 left-0 right-0 top-0 flex h-full w-full items-center justify-center bg-[#000000d1] text-[1.4rem] text-green-500 decoration-solid">
+        <p className="absolute bottom-0 left-0 right-0 top-0 flex h-full w-full animate-fadeOut items-center justify-center bg-[#000000d1] text-[1.4rem] text-green-500 decoration-solid">
           Subscribed successfully!
         </p>
       )}
