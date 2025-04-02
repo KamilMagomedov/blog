@@ -57,3 +57,4 @@ export default Home;
 
 // check code
 // add function when user open my blog
+//fix skeletonAbout

@@ -13,15 +13,13 @@ export const metadata: Metadata = {
 };
 
 interface PageProps {
-  searchParams: {
-    page?: string | string[];
-    [key: string]: string | string[] | undefined;
-  };
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
 const DevelopmentPage = async ({ searchParams }: PageProps) => {
   const params = await searchParams;
   const page = params.page;
+  console.log("params: ", params, 1111);
   const currentPage = Array.isArray(page) ? page[0] : page || "1";
 
   const postQueryBuilder: IGetPostQueryBuilder = getPostQueryBuilder()
