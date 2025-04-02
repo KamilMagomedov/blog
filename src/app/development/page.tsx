@@ -12,18 +12,23 @@ export const metadata: Metadata = {
   keywords: ["development", "programming", "coding", "software", "technology"],
 };
 
-const DevelopmentPage = async ({
-  searchParams,
-}: {
-  searchParams: Record<string, string | string[] | undefined>;
-}) => {
-  const page = Array.isArray(searchParams.page)
-    ? searchParams.page[0]
-    : searchParams.page || "1";
+interface PageProps {
+  searchParams: {
+    page?: string | string[];
+    [key: string]: string | string[] | undefined;
+  };
+}
+
+const DevelopmentPage = async ({ searchParams }: PageProps) => {
+  const params = await searchParams;
+  const page = params.page;
+  const currentPage = Array.isArray(page) ? page[0] : page || "1";
+
   const postQueryBuilder: IGetPostQueryBuilder = getPostQueryBuilder()
-    .setPage(page)
+    .setPage(currentPage)
     .setLimit(7)
     .setType("development");
+
   const { data, paginator } = await fetchPosts(postQueryBuilder);
 
   return (
