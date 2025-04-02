@@ -25,7 +25,8 @@ export const metadata: Metadata = {
 const TravelPage: React.FC<{ searchParams: ISearchParams }> = async ({
   searchParams,
 }) => {
-  const { page, search, tags } = await searchParams;
+  const params = await searchParams;
+  const { page, search, tags } = params;
   const postQueryBuilder: IGetPostQueryBuilder = getPostQueryBuilder()
     .setPage(page)
     .setLimit(7)

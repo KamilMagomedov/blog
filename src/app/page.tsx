@@ -18,7 +18,8 @@ interface ISearchParams {
 const Home: React.FC<{ searchParams: ISearchParams }> = async ({
   searchParams,
 }) => {
-  const { page, search, tags, archive } = await searchParams;
+  const params = await searchParams;
+  const { page, search, tags, archive } = params;
 
   const postQueryBuilder: IGetPostQueryBuilder = getPostQueryBuilder()
     .setPage(page || "1")
