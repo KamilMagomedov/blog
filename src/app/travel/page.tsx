@@ -1,4 +1,4 @@
-import HomeClient from "@/components/homeClient/HomeClient";
+import TravelClient from "@/components/travelClient/TravelClient";
 import {
   fetchPosts,
   getCategories,
@@ -7,52 +7,59 @@ import {
 } from "@/lib/api";
 import { getPostQueryBuilder } from "@/lib/builder";
 import { IGetPostQueryBuilder } from "@/types/Posts";
+import { Metadata } from "next";
 
 interface ISearchParams {
   page?: string;
   search?: string;
   tags?: string;
-  archive?: string;
 }
 
-const Home: React.FC<{ searchParams: ISearchParams }> = async ({
+export const metadata: Metadata = {
+  title: "Travel Posts - Explore the World",
+  description:
+    "Discover the best travel destinations, tips, and experiences from our latest travel blog posts.",
+  keywords: ["travel", "tourism", "destinations", "adventure", "travel tips"],
+};
+
+const TravelPage: React.FC<{ searchParams: ISearchParams }> = async ({
   searchParams,
 }) => {
-  const { page, search, tags, archive } = await searchParams;
-
+  const { page, search, tags } = await searchParams;
   const postQueryBuilder: IGetPostQueryBuilder = getPostQueryBuilder()
     .setPage(page)
     .setLimit(7)
+    .setType("travel")
     .setSearch(search)
-    .setTags(tags)
-    .setArchive(archive);
+    .setTags(tags);
 
   const { data, paginator } = await fetchPosts(postQueryBuilder);
 
   const categories = await getCategories();
   const postsCalendar = await getPostsCalendar();
-  const postsTags = await getTags();
+  const postsTags = await getTags("travel");
 
   const mostPopularPostQueryBuilder: IGetPostQueryBuilder =
-    getPostQueryBuilder().setLimit(3).setOrder("likes").setDir("desc");
+    getPostQueryBuilder()
+      .setLimit(3)
+      .setOrder("likes")
+      .setDir("desc")
+      .setType("travel");
 
   const { data: topThreePopular } = await fetchPosts(
     mostPopularPostQueryBuilder,
   );
 
   return (
-    <HomeClient
+    <TravelClient
       data={data}
       paginator={paginator}
       categories={categories}
-      topThreePopular={topThreePopular}
       postsCalendar={postsCalendar}
+      topThreePopular={topThreePopular}
       postsTags={postsTags}
     />
   );
 };
 
-export default Home;
-
-// check code
-// add function when user open my blog
+export default TravelPage;
