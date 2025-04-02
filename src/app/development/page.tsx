@@ -21,7 +21,7 @@ const DevelopmentPage = async ({
 }: {
   searchParams: ISearchParams;
 }) => {
-  const { page } = await searchParams;
+  const { page } = searchParams;
   const postQueryBuilder: IGetPostQueryBuilder = getPostQueryBuilder()
     .setPage(page)
     .setLimit(7)
