@@ -25,12 +25,12 @@ export const getPostQueryBuilder = (): IGetPostQueryBuilder => {
     }
 
     setPage(param: string | undefined): this {
-      this.page = param;
+      this.page = param || "1";
       return this;
     }
 
     setSearch(param: string | null | undefined): this {
-      this.search = param;
+      this.search = param || null;
       return this;
     }
 
@@ -50,7 +50,7 @@ export const getPostQueryBuilder = (): IGetPostQueryBuilder => {
     }
 
     setTags(param: string | null | undefined): this {
-      this.tags = param;
+      this.tags = param || null;
       return this;
     }
 
@@ -65,12 +65,12 @@ export const getPostQueryBuilder = (): IGetPostQueryBuilder => {
     }
 
     setArchive(date: string | undefined | null): this {
-      this.archive = date;
+      this.archive = date || null;
       return this;
     }
 
     build(): string {
-      const params: Record<string, any> = {
+      const params: Record<string, string | number | undefined | null> = {
         page: this.page,
         search: this.search,
         limit: this.limit,
