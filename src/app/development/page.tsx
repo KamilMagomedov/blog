@@ -1,9 +1,13 @@
-import ListPostDevelopment from "@/components/listPostDevelopment/ListPostDevelopment";
-import { Pagination } from "@/components/pagination/Pagination";
+import { Metadata } from "next";
 import { fetchPosts } from "@/lib/api";
 import { getPostQueryBuilder } from "@/lib/builder";
 import { IGetPostQueryBuilder } from "@/types/Posts";
-import { Metadata } from "next";
+import ListPostDevelopment from "@/components/listPostDevelopment/ListPostDevelopment";
+import { Pagination } from "@/components/pagination/Pagination";
+
+interface PageProps {
+  searchParams: { [key: string]: string | string[] | undefined };
+}
 
 export const metadata: Metadata = {
   title: "Development Posts - Learn & Grow",
@@ -12,14 +16,9 @@ export const metadata: Metadata = {
   keywords: ["development", "programming", "coding", "software", "technology"],
 };
 
-interface PageProps {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-}
-
 const DevelopmentPage = async ({ searchParams }: PageProps) => {
-  const params = await searchParams;
-  const page = params.page;
-  console.log("params: ", params, 1111);
+  const page = searchParams?.page;
+  console.log(page, 33333, typeof page);
   const currentPage = Array.isArray(page) ? page[0] : page || "1";
 
   const postQueryBuilder: IGetPostQueryBuilder = getPostQueryBuilder()
