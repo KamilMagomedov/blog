@@ -4,8 +4,9 @@ import ListPostTravel from "../listPostTravel/ListPostTravel";
 import { Pagination } from "../pagination/Pagination";
 import WidgetsPanel from "../widgetsPanel/WidgetsPanel";
 import { ICategories, IPostCalendar } from "@/types/Travel";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ITag } from "@/types/Common";
+import { sendDataToBackend } from "@/lib/api";
 
 interface ITravelClientProps {
   data: IPost[];
@@ -27,6 +28,20 @@ const TravelClient: React.FC<ITravelClientProps> = ({
   const [isLoading, setIsLoading] = useState(true);
   const setIsLoadingCallback = useCallback((param: boolean) => {
     setIsLoading(param);
+  }, []);
+
+  useEffect(() => {
+    const userAgent = navigator.userAgent;
+    const language = navigator.language;
+    const type = window.location.href;
+
+    const userData = {
+      userAgent,
+      language,
+      type,
+    };
+
+    sendDataToBackend(userData);
   }, []);
 
   return (

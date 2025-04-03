@@ -1,5 +1,7 @@
 "use client";
-import ContactSkeleton from "@/app/contact/ui/ContactSkeleton";
+
+import AboutSkeleton from "@/app/about/ui/AboutSkeleton";
+import { sendDataToBackend } from "@/lib/api";
 import { Data } from "@/types/AboutAuthorInfromation";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
@@ -16,8 +18,22 @@ const AboutClient: React.FC<IAboutClientProps> = ({ aboutAuthorInform }) => {
     }
   }, [aboutAuthorInform]);
 
+  useEffect(() => {
+    const userAgent = navigator.userAgent;
+    const language = navigator.language;
+    const type = window.location.href;
+
+    const userData = {
+      userAgent,
+      language,
+      type,
+    };
+
+    sendDataToBackend(userData);
+  }, []);
+
   if (loading) {
-    return <ContactSkeleton />;
+    return <AboutSkeleton />;
   }
 
   return (

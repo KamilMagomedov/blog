@@ -1,5 +1,5 @@
 import { Author } from "@/types/AboutAuthorInfromation";
-import { ITag } from "@/types/Common";
+import { ISendDataToBackend, ITag } from "@/types/Common";
 import { IContactsInformation } from "@/types/ContactInformation";
 import { IGetPostQueryBuilder, IPaginator, IPost } from "@/types/Posts";
 import { ICategories, IPostCalendar } from "@/types/Travel";
@@ -189,4 +189,27 @@ export const disLikePost = async (id: number): Promise<boolean> => {
     console.log(error);
   }
   return result;
+};
+
+export const sendDataToBackend = async (
+  data: ISendDataToBackend,
+): Promise<boolean> => {
+  try {
+    const response = await fetch(`${API_URL}/user-visits`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to send data: ${response.status}`);
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error sending data to the backend: ", error);
+    return false;
+  }
 };

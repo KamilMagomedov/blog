@@ -1,12 +1,13 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ListPostHome from "@/components/listPostHome/ListPostHome";
 import { Pagination } from "@/components/pagination/Pagination";
 import WidgetsPanel from "@/components/widgetsPanel/WidgetsPanel";
 import { IPost, IPaginator } from "@/types/Posts";
 import { ICategories, IPostCalendar } from "@/types/Travel";
 import { ITag } from "@/types/Common";
+import { sendDataToBackend } from "@/lib/api";
 
 interface IHomeClientProps {
   data: IPost[];
@@ -28,6 +29,20 @@ const HomeClient: React.FC<IHomeClientProps> = ({
   const [isLoading, setIsLoading] = useState(true);
   const setIsLoadingCallback = useCallback((param: boolean) => {
     setIsLoading(param);
+  }, []);
+
+  useEffect(() => {
+    const userAgent = navigator.userAgent;
+    const language = navigator.language;
+    const type = window.location.href;
+
+    const userData = {
+      userAgent,
+      language,
+      type,
+    };
+
+    sendDataToBackend(userData);
   }, []);
 
   return (

@@ -9,6 +9,7 @@ import { IPost } from "@/types/Posts";
 import { getPostImage } from "@/lib/getPostImages";
 import { lora } from "@/styles/fonts";
 import DevelopmentSkeleton from "@/app/development/ui/DevelopmentSkeleton";
+import { sendDataToBackend } from "@/lib/api";
 
 interface IListPostDevelopmentProps {
   data: IPost[];
@@ -21,6 +22,20 @@ const ListPostDevelopment: React.FC<IListPostDevelopmentProps> = ({ data }) => {
       setLoading(false);
     }
   }, [data]);
+
+  useEffect(() => {
+    const userAgent = navigator.userAgent;
+    const language = navigator.language;
+    const type = window.location.href;
+
+    const userData = {
+      userAgent,
+      language,
+      type,
+    };
+
+    sendDataToBackend(userData);
+  }, []);
 
   const postRefs = useRef<(HTMLLIElement | undefined | null)[]>([]);
 

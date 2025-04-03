@@ -1,7 +1,7 @@
 "use client";
 
 import ContactSkeleton from "@/app/contact/ui/ContactSkeleton";
-import { getContactItems } from "@/lib/api";
+import { getContactItems, sendDataToBackend } from "@/lib/api";
 import { getFullPath } from "@/lib/googleMaps";
 import { lora } from "@/styles/fonts";
 import { IContactInformation } from "@/types/ContactInformation";
@@ -45,6 +45,20 @@ const ContactInformation: React.FC = () => {
       return () => clearTimeout(timer);
     }
   }, [isCopied]);
+
+  useEffect(() => {
+    const userAgent = navigator.userAgent;
+    const language = navigator.language;
+    const type = window.location.href;
+
+    const userData = {
+      userAgent,
+      language,
+      type,
+    };
+
+    sendDataToBackend(userData);
+  }, []);
 
   const inform = (key: string): IContactInformation | undefined =>
     Array.isArray(contactInformations)

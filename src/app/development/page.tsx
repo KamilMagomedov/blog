@@ -1,13 +1,15 @@
-import { Metadata } from "next";
+import { type Metadata } from "next";
 import { fetchPosts } from "@/lib/api";
 import { getPostQueryBuilder } from "@/lib/builder";
 import { IGetPostQueryBuilder } from "@/types/Posts";
 import ListPostDevelopment from "@/components/listPostDevelopment/ListPostDevelopment";
 import { Pagination } from "@/components/pagination/Pagination";
 
-interface PageProps {
-  searchParams: { [key: string]: string | string[] | undefined };
-}
+type SearchParams = {
+  searchParams: {
+    page?: string | string[];
+  };
+};
 
 export const metadata: Metadata = {
   title: "Development Posts - Learn & Grow",
@@ -16,10 +18,10 @@ export const metadata: Metadata = {
   keywords: ["development", "programming", "coding", "software", "technology"],
 };
 
-const DevelopmentPage = async ({ searchParams }: PageProps) => {
-  const page = searchParams?.page;
+const DevelopmentPage = async ({ searchParams }: SearchParams) => {
+  const page = searchParams.page;
   console.log(page, 33333, typeof page);
-  const currentPage = Array.isArray(page) ? page[0] : page || "1";
+  const currentPage = Array.isArray(page) ? page[0] : (page ?? "1");
 
   const postQueryBuilder: IGetPostQueryBuilder = getPostQueryBuilder()
     .setPage(currentPage)

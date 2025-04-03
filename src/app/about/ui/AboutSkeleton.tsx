@@ -2,15 +2,23 @@ import React from "react";
 
 const AboutSkeleton: React.FC = () => {
   return (
-    <section className="float-right flex h-full animate-pulse bg-gray-300 xs:w-full xs:flex-col lg:w-3/4 xl:flex-row">
-      <div className="rounded-[20px] bg-gray-300 object-cover xs:w-full lg:w-1/2 xl:w-1/3" />
+    <section className="float-right flex h-full animate-pulse xs:w-full xs:flex-col lg:w-3/4 xl:flex-row">
+      <div className="h-full rounded-[20px] bg-gray-300 object-cover xs:w-full xl:w-1/2" />
 
-      {/* <div className="flex w-1/2 items-center bg-gray-300 px-[15px] pt-12 xs:w-full xs:text-center xl:text-left">
-        <div className="lg:px-6">
-          <div className="bg-gray-300 xs:h-8 md:h-12"></div>
-          <div className="bg-gray-300 xs:pb-[30px]"></div>
+      <div className="flex items-center px-[15px] pt-12 xs:w-full xl:w-1/2">
+        <div className="justify-content flex flex-col items-center xs:w-full lg:px-6">
+          <div className="mb-2 h-6 bg-gray-300 xs:w-full md:h-8 xl:w-full"></div>
+          <div className="mb-2 h-6 bg-gray-300 xs:w-[90%] md:h-8 xl:w-[90%]"></div>
+          {Array.from({ length: 4 }).map((_, i) => {
+            return (
+              <p
+                key={i}
+                className="mb-2 h-4 bg-gray-300 xs:w-full md:h-6 lg:w-[80%]"
+              ></p>
+            );
+          })}
         </div>
-      </div> */}
+      </div>
     </section>
   );
 };
