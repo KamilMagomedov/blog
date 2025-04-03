@@ -6,10 +6,8 @@ import { ICategories, IPostCalendar } from "@/types/Travel";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-if (!process.env.NEXT_PUBLIC_API_URL) {
-  console.warn(
-    "Environment variable NEXT_PUBLIC_API_URL is not defined. Using default API URL.",
-  );
+if (!API_URL) {
+  throw new Error("Environment variable NEXT_PUBLIC_API_URL is not defined.");
 }
 
 export const fetchPosts = async (postQueryBuilder: IGetPostQueryBuilder) => {
