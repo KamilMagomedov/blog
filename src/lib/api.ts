@@ -4,10 +4,13 @@ import { IContactsInformation } from "@/types/ContactInformation";
 import { IGetPostQueryBuilder, IPaginator, IPost } from "@/types/Posts";
 import { ICategories, IPostCalendar } from "@/types/Travel";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "https://default-api-url.com";
 
-if (!API_URL) {
-  throw new Error("Environment variable NEXT_PUBLIC_API_URL is not defined.");
+if (!process.env.NEXT_PUBLIC_API_URL) {
+  console.warn(
+    "Environment variable NEXT_PUBLIC_API_URL is not defined. Using default API URL.",
+  );
 }
 
 export const fetchPosts = async (postQueryBuilder: IGetPostQueryBuilder) => {
