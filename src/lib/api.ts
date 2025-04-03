@@ -15,7 +15,7 @@ export const fetchPosts = async (postQueryBuilder: IGetPostQueryBuilder) => {
     const response = await fetch(
       `${API_URL}/v1/blog/posts?${postQueryBuilder.build()}`,
       {
-        cache: "no-store",
+        next: { revalidate: 3600 },
       },
     );
 
@@ -45,7 +45,7 @@ export const getPostById = async (postId: string): Promise<IPost> => {
 
   try {
     const response = await fetch(`${API_URL}/v1/blog/posts/${postId}`, {
-      cache: "no-store",
+      next: { revalidate: 3600 },
     });
 
     if (!response.ok) {
@@ -65,6 +65,9 @@ export const getCategories = async (): Promise<ICategories> => {
   try {
     const response = await fetch(
       `${API_URL}/v1/blog/categories?with_count_posts=1`,
+      {
+        next: { revalidate: 3600 },
+      },
     );
 
     if (!response.ok) {
@@ -80,7 +83,9 @@ export const getCategories = async (): Promise<ICategories> => {
 
 export const getPostsCalendar = async (): Promise<IPostCalendar[]> => {
   try {
-    const response = await fetch(`${API_URL}/v1/blog/posts-calendar`);
+    const response = await fetch(`${API_URL}/v1/blog/posts-calendar`, {
+      next: { revalidate: 3600 },
+    });
 
     if (!response.ok) {
       throw new Error(`Failed to fetch posts calendar: ${response.status}`);
@@ -114,7 +119,9 @@ export const getComments = async (id: string) => {
 export const getContactItems =
   async (): Promise<IContactsInformation | null> => {
     try {
-      const response = await fetch(`${API_URL}/contact-items`);
+      const response = await fetch(`${API_URL}/contact-items`, {
+        next: { revalidate: 3600 },
+      });
 
       if (!response.ok) {
         throw new Error(`Failed to fetch contact items: ${response.status}`);
@@ -132,7 +139,9 @@ export const getContactItems =
 export const getAuthorInformation = async (): Promise<Author> => {
   let contacts;
   try {
-    const response = await fetch(`${API_URL}/v1/blog/about`);
+    const response = await fetch(`${API_URL}/v1/blog/about`, {
+      next: { revalidate: 3600 },
+    });
 
     if (!response.ok) {
       throw new Error(`Failed to fetch contact items: ${response.status}`);
