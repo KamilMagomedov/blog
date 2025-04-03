@@ -4,8 +4,7 @@ import { IContactsInformation } from "@/types/ContactInformation";
 import { IGetPostQueryBuilder, IPaginator, IPost } from "@/types/Posts";
 import { ICategories, IPostCalendar } from "@/types/Travel";
 
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://default-api-url.com";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 if (!process.env.NEXT_PUBLIC_API_URL) {
   console.warn(
