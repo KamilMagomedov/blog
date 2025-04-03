@@ -5,10 +5,10 @@ import { IGetPostQueryBuilder } from "@/types/Posts";
 import ListPostDevelopment from "@/components/listPostDevelopment/ListPostDevelopment";
 import { Pagination } from "@/components/pagination/Pagination";
 
-type SearchParams = {
-  searchParams: {
+type PageProps = {
+  searchParams: Promise<{
     page?: string | string[];
-  };
+  }>;
 };
 
 export const metadata: Metadata = {
@@ -18,9 +18,10 @@ export const metadata: Metadata = {
   keywords: ["development", "programming", "coding", "software", "technology"],
 };
 
-const DevelopmentPage = async ({ searchParams }: SearchParams) => {
-  const page = searchParams.page;
-  console.log(page, 33333, typeof page);
+const DevelopmentPage = async ({ searchParams }: PageProps) => {
+  const resolvedSearchParams = await searchParams;
+  const page = resolvedSearchParams.page;
+
   const currentPage = Array.isArray(page) ? page[0] : (page ?? "1");
 
   const postQueryBuilder: IGetPostQueryBuilder = getPostQueryBuilder()

@@ -84,7 +84,7 @@ export const getPostQueryBuilder = (): IGetPostQueryBuilder => {
 
       return Object.entries(params)
         .filter(([, value]) => value !== null && value !== undefined)
-        .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+        .map(([key, value]) => `${key}=${encodeURIComponent(String(value))}`)
         .join("&");
     }
   }

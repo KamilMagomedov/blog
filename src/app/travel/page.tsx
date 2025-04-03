@@ -15,6 +15,10 @@ interface ISearchParams {
   tags?: string;
 }
 
+interface PageProps {
+  searchParams: Promise<ISearchParams>;
+}
+
 export const metadata: Metadata = {
   title: "Travel Posts - Explore the World",
   description:
@@ -22,17 +26,15 @@ export const metadata: Metadata = {
   keywords: ["travel", "tourism", "destinations", "adventure", "travel tips"],
 };
 
-const TravelPage: React.FC<{ searchParams: ISearchParams }> = async ({
-  searchParams,
-}) => {
-  const params = await searchParams;
-  const { page, search, tags } = params;
+const TravelPage = async ({ searchParams }: PageProps) => {
+  const { page, search, tags } = await searchParams;
+
   const postQueryBuilder: IGetPostQueryBuilder = getPostQueryBuilder()
-    .setPage(page)
+    .setPage(page || "1")
     .setLimit(7)
     .setType("travel")
-    .setSearch(search)
-    .setTags(tags);
+    .setSearch(search || "")
+    .setTags(tags || "");
 
   const { data, paginator } = await fetchPosts(postQueryBuilder);
 

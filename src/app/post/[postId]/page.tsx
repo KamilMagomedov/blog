@@ -5,13 +5,14 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 interface PostPageProps {
-  params: { postId: string };
+  params: Promise<{ postId: string }>;
 }
 
 export async function generateMetadata({
   params,
 }: PostPageProps): Promise<Metadata> {
-  const { postId } = await params;
+  const resolvedParams = await params;
+  const { postId } = resolvedParams;
   const post = await getPostById(postId);
 
   if (!post) {
@@ -29,7 +30,8 @@ export async function generateMetadata({
 }
 
 const PostPage: React.FC<PostPageProps> = async ({ params }) => {
-  const { postId } = await params;
+  const resolvedParams = await params;
+  const { postId } = resolvedParams;
 
   if (!postId) return notFound();
 
