@@ -60,13 +60,12 @@ export const getPostById = async (postId: string): Promise<IPost> => {
   }
 };
 
-export const getCategories = async (): Promise<ICategories> => {
-  let data;
+export const getCategories = async (): Promise<ICategories | null> => {
   try {
     const response = await fetch(
       `${API_URL}/v1/blog/categories?with_count_posts=1`,
       {
-        next: { revalidate: 3600 },
+        next: { revalidate: 86400 },
       },
     );
 
@@ -74,11 +73,11 @@ export const getCategories = async (): Promise<ICategories> => {
       throw new Error(`Failed to fetch categories: ${response.status}`);
     }
 
-    data = await response.json();
+    return await response.json();
   } catch (error) {
     console.log(error);
+    return null;
   }
-  return data;
 };
 
 export const getPostsCalendar = async (): Promise<IPostCalendar[]> => {

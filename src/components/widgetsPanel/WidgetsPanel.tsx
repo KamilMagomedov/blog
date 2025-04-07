@@ -13,7 +13,7 @@ import Archives from "../archives/Archives";
 import { ITag } from "@/types/Common";
 
 interface WidgetsPanelProps {
-  categories: ICategories;
+  categories: ICategories | null;
   topThreePopular: IPost[];
   postsCalendar: IPostCalendar[];
   isLoading: boolean;
@@ -32,10 +32,10 @@ const WidgetsPanel: React.FC<WidgetsPanelProps> = ({
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    if (categories?.data) {
+    if (categories && categories.data) {
       setLoading(false);
     }
-  }, [categories.data]);
+  }, [categories?.data]);
 
   if (loading) {
     return <WidgetsPanelSkeleton />;
@@ -44,7 +44,7 @@ const WidgetsPanel: React.FC<WidgetsPanelProps> = ({
   return (
     <div className="sidebar 2xl:flex-basic-[33.3%] xs:flex-basic-[100%] bg-[#f8f9fa] pt-12 xs:w-full xs:max-w-[100%] 2xl:w-1/3 2xl:max-w-[33.333%] 2xl:flex-shrink-0 2xl:flex-grow-0">
       <SearchKeywords setIsLoadingCallback={setIsLoadingCallback} />
-      <Categories categories={categories.data.categories} />
+      <Categories categories={categories && categories.data.categories} />
       <PopularArticles topThreePopular={topThreePopular} />
       <TagCloud
         isLoading={isLoading}

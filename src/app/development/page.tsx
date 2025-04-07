@@ -7,7 +7,7 @@ import { Pagination } from "@/components/pagination/Pagination";
 
 type PageProps = {
   searchParams: Promise<{
-    page?: string | string[];
+    page?: string | undefined;
   }>;
 };
 
@@ -18,14 +18,14 @@ export const metadata: Metadata = {
   keywords: ["development", "programming", "coding", "software", "technology"],
 };
 
+export const revalidate = 3600;
+
 const DevelopmentPage = async ({ searchParams }: PageProps) => {
   const resolvedSearchParams = await searchParams;
-  const page = resolvedSearchParams.page;
-
-  const currentPage = Array.isArray(page) ? page[0] : (page ?? "1");
+  const page = resolvedSearchParams.page || "1";
 
   const postQueryBuilder: IGetPostQueryBuilder = getPostQueryBuilder()
-    .setPage(currentPage)
+    .setPage(page)
     .setLimit(7)
     .setType("development");
 

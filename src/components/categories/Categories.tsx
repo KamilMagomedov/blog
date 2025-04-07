@@ -2,7 +2,7 @@ import { lora } from "@/styles/fonts";
 import { ICategory } from "@/types/Travel";
 
 interface ICategoriesProps {
-  categories: ICategory[];
+  categories: ICategory[] | null;
 }
 const Categories: React.FC<ICategoriesProps> = ({ categories }) => {
   return (
@@ -14,7 +14,7 @@ const Categories: React.FC<ICategoriesProps> = ({ categories }) => {
           Categories
         </h3>
         <ul>
-          {categories.map((category) => (
+          {categories?.map((category) => (
             <li
               key={category.id}
               className="relative mb-[10px] border-b-[1px] border-[#dee2e6] pb-[10px]"
