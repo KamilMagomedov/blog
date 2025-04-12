@@ -21,7 +21,7 @@ const Categories: React.FC<ICategoriesProps> = ({ categories }) => {
             >
               <p className="text-[black]">
                 {category.title}
-                <span className="absolute right-0 top-0 text-[#ccc]">
+                <span className="absolute right-0 top-0 font-black text-[#575557]">
                   ({category.posts_count})
                 </span>
               </p>

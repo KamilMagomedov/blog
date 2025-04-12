@@ -40,20 +40,20 @@ const PopularArticles: React.FC<ITopThreePopular> = ({ topThreePopular }) => {
                     <Link href={`/post/${popular.id}`}>{popular.title}</Link>
                   </h3>
                   <div className="mb-1 flex items-center">
-                    <CalendarDays className="mr-1 h-3 w-3 flex-shrink-0 text-[#808080]" />
-                    <span className="text-xs text-[gray]">
+                    <CalendarDays className="mr-1 h-3 w-3 flex-shrink-0 text-[#575557]" />
+                    <span className="text-xs text-[#575557]">
                       {popular.published_at}
                     </span>
                   </div>
                   <div className="mb-1 flex items-center">
-                    <UserRound className="mr-1 h-3 w-3 flex-shrink-0 text-[#808080]" />
-                    <span className="line-clamp-1 max-w-[158px] overflow-hidden text-ellipsis text-xs text-[gray]">
+                    <UserRound className="mr-1 h-3 w-3 flex-shrink-0 text-[#575557]" />
+                    <span className="line-clamp-1 max-w-[158px] overflow-hidden text-ellipsis text-xs text-[#575557]">
                       <Link href="/about">{popular.author.name}</Link>
                     </span>
                   </div>
                   <div className="flex items-center">
-                    <MessageSquareText className="mr-1 h-3 w-3 flex-shrink-0 text-[#808080]" />
-                    <span className="text-xs text-[gray]">
+                    <MessageSquareText className="mr-1 h-3 w-3 flex-shrink-0 text-[#575557]" />
+                    <span className="text-xs text-[#575557]">
                       {popular.comments_count}
                     </span>
                   </div>

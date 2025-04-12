@@ -66,7 +66,7 @@ const PostBody: React.FC<IPostBodyProps> = ({ post }) => {
       <div className="mb-4">
         <Link
           href={`/${post.type}`}
-          className="mb-[7px] mr-1 inline-block border border-solid border-[#ccc] px-[10px] py-1 text-[11px] uppercase text-black"
+          className="mb-[7px] mr-1 inline-block border border-solid border-[#6c757d] px-[10px] py-1 text-[11px] uppercase text-black"
         >
           {post.type}
         </Link>

@@ -51,7 +51,7 @@ const CommentsMassage: React.FC<ICommentsProps> = ({
               <h3 className="font-normal text-[#000c] xs:text-base md:text-xl">
                 {uppercaseFirstLetter}
               </h3>
-              <p className="-tracking-4 text-[13px] uppercase text-[#ccc]">
+              <p className="-tracking-4 text-[13px] uppercase text-[#6c757d]">
                 {comment.created_at}
               </p>
               <p>{comment.comment}</p>

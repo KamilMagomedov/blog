@@ -7,7 +7,7 @@ const BurgerMenu: React.FC = () => {
   return (
     <div className="lg:hidden">
       <button
-        className={`fixed top-4 z-[50] flex flex-col items-center justify-center p-3 transition-transform duration-500 ease-in-out focus:outline-none ${isActive ? "translate-x-[calc(100vw-60px)]" : "translate-x-0"} `}
+        className={`fixed top-4 z-[52] flex flex-col items-center justify-center p-3 transition-transform duration-500 ease-in-out focus:outline-none ${isActive ? "translate-x-[calc(100vw-60px)]" : "translate-x-0"} `}
         onClick={openBurgerMenu}
         aria-label="Toggle Menu"
       >

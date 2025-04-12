@@ -57,7 +57,7 @@ const Newsletter: React.FC = () => {
   }, [showMessage]);
 
   return (
-    <div className="relative z-0 mx-auto mb-[40px] bg-[url(/bg_mountains.jpg)] bg-cover bg-center bg-no-repeat px-[25px] text-[15px] text-white xs:h-[271px] xs:w-[290px] md:h-[370px] md:w-[520px] 2xl:h-[271px] 2xl:w-[350px]">
+    <div className="relative z-0 mx-auto mb-[40px] bg-[url(/bg_1.webp)] bg-cover bg-center bg-no-repeat px-[25px] text-[15px] text-white xs:h-[271px] xs:w-[290px] md:h-[370px] md:w-[520px] 2xl:h-[271px] 2xl:w-[350px]">
       <div className="absolute inset-0 z-[-1] bg-black opacity-60"></div>
       <h3 className={`mb-[30px] text-xl italic ${lora.className}`}>
         Newsletter

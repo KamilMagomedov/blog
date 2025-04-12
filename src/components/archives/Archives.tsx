@@ -66,7 +66,7 @@ const Archives: React.FC<IPostsCalendarProps> = ({
                         className="flex w-full justify-between"
                       >
                         <span>{month.monthName}</span>
-                        <span className="text-[#ccc]">{month.total}</span>
+                        <span className="text-[#6c757d]">{month.total}</span>
                       </button>
                     </li>
                   ))}

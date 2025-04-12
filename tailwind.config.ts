@@ -13,7 +13,7 @@ export default {
         foreground: "var(--foreground)",
       },
       backgroundImage: {
-        "custom-text": "url('/bg_1.jpg')",
+        "custom-text": "url('/bg_1.webp')",
       },
       keyframes: {
         likeBounce: {

@@ -9,7 +9,6 @@ import { IPost } from "@/types/Posts";
 import { getPostImage } from "@/lib/getPostImages";
 import { lora } from "@/styles/fonts";
 import DevelopmentSkeleton from "@/app/development/ui/DevelopmentSkeleton";
-import { sendDataToBackend } from "@/lib/api";
 
 interface IListPostDevelopmentProps {
   data: IPost[];
@@ -24,20 +23,6 @@ const ListPostDevelopment: React.FC<IListPostDevelopmentProps> = React.memo(
         setLoading(false);
       }
     }, [data]);
-
-    useEffect(() => {
-      const userAgent = navigator.userAgent;
-      const language = navigator.language;
-      const type = window.location.href;
-
-      const userData = {
-        userAgent,
-        language,
-        type,
-      };
-
-      sendDataToBackend(userData);
-    }, []);
 
     const postRefs = useRef<(HTMLLIElement | undefined | null)[]>([]);
 
@@ -106,7 +91,7 @@ const ListPostDevelopment: React.FC<IListPostDevelopmentProps> = React.memo(
                   height={150}
                   className="h-full bg-cover bg-center bg-no-repeat object-cover"
                   style={{ color: "black" }}
-                  priority={true}
+                  loading="lazy"
                 />
               </Link>
             </div>
@@ -121,10 +106,10 @@ const ListPostDevelopment: React.FC<IListPostDevelopmentProps> = React.memo(
                   <p className="xs:row flex xs:items-center xs:align-middle">
                     <CalendarRange
                       size={14}
-                      color="#bfbfbf"
+                      color="#6c757d"
                       className="mr-[10px]"
                     />{" "}
-                    <span className="mr-[10px] text-sm text-[#bfbfbf]">
+                    <span className="mr-[10px] text-sm text-[#6c757d]">
                       {post.published_at}
                     </span>
                   </p>
@@ -132,15 +117,15 @@ const ListPostDevelopment: React.FC<IListPostDevelopmentProps> = React.memo(
                   <div className="xs:row flex xs:items-center xs:align-middle">
                     <MessageCircleMore
                       size={14}
-                      color="#bfbfbf"
+                      color="#6c757d"
                       className="mr-[10px]"
                     />
                     <CommentsCount count={post.comments_count || 0} />
                   </div>
                   <span className="flex items-center">
                     <Heart
-                      fill="#bfbfbf"
-                      color="#bfbfbf"
+                      fill="#6c757d"
+                      color="#6c757d"
                       className="mr-[6px] h-[15px] w-[15px]"
                     />
                     {post.likes}
@@ -154,9 +139,9 @@ const ListPostDevelopment: React.FC<IListPostDevelopmentProps> = React.memo(
                 ></p>
                 <Link
                   href={`/post/${post.id}`}
-                  className="relative mr-4 max-w-[82px] text-[#1eafed]"
+                  className="relative mr-4 max-w-[165px] text-[#1eafed]"
                 >
-                  Read More{" "}
+                  Read More About Post{" "}
                   <span className="before:absolute before:right-[-15px] before:top-[15px] before:inline-block before:h-[2px] before:w-[9px] before:-rotate-45 before:bg-[#1eafed] before:content-[''] after:absolute after:right-[-15px] after:top-[10px] after:inline-block after:h-[2px] after:w-[9px] after:rotate-45 after:bg-[#1eafed] after:content-['']"></span>
                 </Link>
               </div>

@@ -109,10 +109,10 @@ const ListPostHome = ({
                     <p className="xs:row flex xs:items-center xs:align-middle">
                       <CalendarRange
                         size={14}
-                        color="#bfbfbf"
+                        color="#6c757d"
                         className="mr-[10px]"
                       />{" "}
-                      <span className="mr-[10px] text-sm text-[#bfbfbf]">
+                      <span className="mr-[10px] text-sm text-[#6c757d]">
                         {post.published_at}
                       </span>
                     </p>
@@ -120,15 +120,15 @@ const ListPostHome = ({
                     <div className="xs:row mr-[10px] flex xs:items-center xs:align-middle">
                       <MessageCircleMore
                         size={14}
-                        color="#bfbfbf"
+                        color="#6c757d"
                         className="mr-[10px]"
                       />
                       <CommentsCount count={post.comments_count || 0} />
                     </div>
                     <span className="flex items-center">
                       <Heart
-                        fill="#bfbfbf"
-                        color="#bfbfbf"
+                        fill="#6c757d"
+                        color="#6c757d"
                         className="mr-[6px] h-[15px] w-[15px]"
                       />
                       {post.likes}
@@ -142,9 +142,9 @@ const ListPostHome = ({
                   ></p>
                   <Link
                     href={`/post/${post.id}`}
-                    className="relative mr-4 max-w-[82px] text-[#1eafed]"
+                    className="relative mr-4 max-w-[165px] text-[#1eafed]"
                   >
-                    Read More{" "}
+                    Read More About Post{" "}
                     <span className="before:absolute before:right-[-15px] before:top-[15px] before:inline-block before:h-[2px] before:w-[9px] before:-rotate-45 before:bg-[#1eafed] before:content-[''] after:absolute after:right-[-15px] after:top-[10px] after:inline-block after:h-[2px] after:w-[9px] after:rotate-45 after:bg-[#1eafed] after:content-['']"></span>
                   </Link>
                 </div>

@@ -125,7 +125,7 @@ const ListPostTravel: React.FC<IListPostTravelProps> = ({
                     />
                   </Link>
                   <div className="text-base">
-                    <span className="inline-block text-[#b3b3b3] xs:mb-[5px] lg:mb-[10px]">
+                    <span className="inline-block text-[#6c757d] xs:mb-[5px] lg:mb-[10px]">
                       Written by
                     </span>
                     <h3 className="text-black">
@@ -142,7 +142,7 @@ const ListPostTravel: React.FC<IListPostTravelProps> = ({
                   href={`/post/${travel.id}`}
                   className="relative mr-4 rounded-[30px] bg-[#1eafed] px-6 py-4 text-[#fff] xs:mx-auto md:mx-0"
                 >
-                  Continue Reading
+                  Read More About Post
                 </Link>
 
                 <div className="flex xs:mb-[20px] xs:justify-center md:mb-0">
@@ -159,7 +159,7 @@ const ListPostTravel: React.FC<IListPostTravelProps> = ({
                   </span>
                   <span className="flex items-center">
                     <MessageCircleMore
-                      color="#bfbfbf"
+                      color="#6c757d"
                       className="mr-[6px] h-[15px] w-[15px]"
                     />
                     {travel.comments_count}

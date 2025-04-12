@@ -10,10 +10,10 @@ const NavBar: React.FC = () => {
   const pathname = usePathname();
 
   const isActive = (href: string) =>
-    href === "/" ? pathname === "/" : pathname.startsWith(href);
+    href === "/" ? pathname === "/" : pathname?.startsWith(href);
 
   const linkClasses = (href: string) =>
-    `relative inline-block py-[10px] text-[#000000b3] transition-colors duration-300 ${
+    `relative inline-block py-[10px] text-[#1eafed] transition-colors duration-300 ${
       isActive(href) ? "text-[#1eafed]" : "hover:text-[#1eafed]"
     } after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:scale-x-0 after:bg-[#1eafed] after:transition-transform after:duration-300 ${
       isActive(href) ? "after:scale-x-100" : "hover:after:scale-x-100"
