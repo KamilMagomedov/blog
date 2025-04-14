@@ -1,4 +1,3 @@
-import TravelClient from "@/components/travelClient/TravelClient";
 import {
   fetchPosts,
   getCategories,
@@ -8,6 +7,11 @@ import {
 import { getPostQueryBuilder } from "@/lib/builder";
 import { IGetPostQueryBuilder } from "@/types/Posts";
 import { Metadata } from "next";
+import dynamic from "next/dynamic";
+
+const TravelClient = dynamic(
+  () => import("@/components/travelClient/TravelClient"),
+);
 
 interface ISearchParams {
   page?: string;
@@ -57,7 +61,7 @@ const TravelPage = async ({ searchParams }: PageProps) => {
     <TravelClient
       data={data}
       paginator={paginator}
-      categories={categories}
+      categories={categories || null}
       postsCalendar={postsCalendar}
       topThreePopular={topThreePopular}
       postsTags={postsTags}

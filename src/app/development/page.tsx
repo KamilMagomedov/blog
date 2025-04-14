@@ -1,9 +1,13 @@
 import { type Metadata } from "next";
+import dynamic from "next/dynamic";
 import { fetchPosts } from "@/lib/api";
 import { getPostQueryBuilder } from "@/lib/builder";
 import { IGetPostQueryBuilder } from "@/types/Posts";
-import ListPostDevelopment from "@/components/listPostDevelopment/ListPostDevelopment";
 import { Pagination } from "@/components/pagination/Pagination";
+
+const ListPostDevelopment = dynamic(
+  () => import("@/components/listPostDevelopment/ListPostDevelopment"),
+);
 
 type PageProps = {
   searchParams: Promise<{

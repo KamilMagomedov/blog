@@ -2,7 +2,6 @@
 
 import { IPost } from "@/types/Posts";
 import { ICategories, IPostCalendar } from "@/types/Travel";
-import { useEffect, useState } from "react";
 import WidgetsPanelSkeleton from "./WidgetsPanelSkeleton";
 import TagCloud from "../tagCloud/TagCloud";
 import Categories from "../categories/Categories";
@@ -29,22 +28,14 @@ const WidgetsPanel: React.FC<WidgetsPanelProps> = ({
   setIsLoadingCallback,
   postsTags,
 }) => {
-  const [loading, setLoading] = useState<boolean>(true);
-
-  useEffect(() => {
-    if (categories && categories.data) {
-      setLoading(false);
-    }
-  }, [categories]);
-
-  if (loading) {
+  if (isLoading || !categories || !categories.data) {
     return <WidgetsPanelSkeleton />;
   }
 
   return (
     <div className="sidebar bg-[#f8f9fa] pt-12 text-[#212529] xs:w-full xs:max-w-[100%] 2xl:w-1/3 2xl:max-w-[33.333%] 2xl:flex-shrink-0 2xl:flex-grow-0">
       <SearchKeywords setIsLoadingCallback={setIsLoadingCallback} />
-      <Categories categories={categories && categories.data.categories} />
+      <Categories categories={categories.data.categories} />
       <PopularArticles topThreePopular={topThreePopular} />
       <TagCloud
         isLoading={isLoading}

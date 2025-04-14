@@ -27,6 +27,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link
+          rel="preload"
+          as="image"
+          href="/bg_1.webp"
+          imageSrcSet="/bg_1.webp 1x"
+          imageSizes="(max-width: 768px) 100vw, 520px"
+        />
+      </head>
       <body className={`${poppins.className} antialiased`}>
         <BurgerMenuProvider>
           <ModalProvider>

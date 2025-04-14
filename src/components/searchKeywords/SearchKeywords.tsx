@@ -11,13 +11,13 @@ const SearchKeywords: React.FC<SearchKeywordsProps> = ({
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const query = searchParams.get("search") || "";
+  const query = searchParams?.get("search") || "";
   const [inputValue, setInputValue] = useState(query);
 
   useEffect(() => {
     setIsLoadingCallback(true);
     const delayDebounceFn = setTimeout(() => {
-      const params = new URLSearchParams(searchParams);
+      const params = new URLSearchParams(searchParams || undefined);
       if (inputValue) {
         params.set("search", inputValue);
       } else {

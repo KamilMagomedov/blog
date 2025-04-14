@@ -18,7 +18,7 @@ const TagCloud: React.FC<ITagCloudProps> = ({
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const selected = searchParams.get("tags")?.split(",") || [];
+  const selected = searchParams?.get("tags")?.split(",") || [];
 
   const toggleTag = (tag: string) => {
     setIsLoadingCallback(true);
@@ -26,7 +26,7 @@ const TagCloud: React.FC<ITagCloudProps> = ({
       ? selected.filter((item) => item !== tag)
       : [...selected, tag];
 
-    const params = new URLSearchParams(searchParams);
+    const params = new URLSearchParams(searchParams || undefined);
     if (updatedTags.length > 0) {
       params.set("tags", updatedTags.join(","));
     } else {

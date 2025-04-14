@@ -1,7 +1,11 @@
-import AboutClient from "@/components/aboutClient/AboutClient";
 import { getAuthorInformation } from "@/lib/api";
 import { Author } from "@/types/AboutAuthorInfromation";
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
+
+const AboutClient = dynamic(
+  () => import("@/components/aboutClient/AboutClient"),
+);
 
 export const metadata: Metadata = {
   title: "About the Author | Kamil's Blog",

@@ -1,4 +1,5 @@
 import { lora } from "@/styles/fonts";
+import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -57,7 +58,20 @@ const Newsletter: React.FC = () => {
   }, [showMessage]);
 
   return (
-    <div className="relative z-0 mx-auto mb-[40px] bg-[url(/bg_1.webp)] bg-cover bg-center bg-no-repeat px-[25px] text-[15px] text-white xs:h-[271px] xs:w-[290px] md:h-[370px] md:w-[520px] 2xl:h-[271px] 2xl:w-[350px]">
+    <div className="relative z-0 mx-auto mb-[40px] text-[15px] text-white xs:h-[271px] xs:w-[290px] md:h-[370px] md:w-[520px] 2xl:h-[271px] 2xl:w-[350px]">
+      <div className="mx-auto h-full overflow-hidden bg-gray-300">
+        <Image
+          className="h-full w-full object-cover"
+          src="/bg_1.webp"
+          alt="Newsletter Background"
+          width={520}
+          height={370}
+          priority
+          placeholder="blur"
+          blurDataURL="/bg_1_blur.webp"
+          sizes="(max-width: 768px) 100vw, 520px"
+        />
+      </div>
       <div className="absolute inset-0 z-[-1] bg-black opacity-60"></div>
       <h3 className={`mb-[30px] text-xl italic ${lora.className}`}>
         Newsletter

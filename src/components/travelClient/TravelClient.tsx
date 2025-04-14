@@ -11,7 +11,7 @@ import { sendDataToBackend } from "@/lib/api";
 interface ITravelClientProps {
   data: IPost[];
   paginator: IPaginator;
-  categories: ICategories;
+  categories: ICategories | null;
   topThreePopular: IPost[];
   postsCalendar: IPostCalendar[];
   postsTags: ITag[];
