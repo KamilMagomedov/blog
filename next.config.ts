@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "portfolio.laravelhub.kyiv.ua",
+        hostname: "portfolio.laravelhub.top",
         pathname: "/storage/**",
       },
       {

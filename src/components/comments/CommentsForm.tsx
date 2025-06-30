@@ -4,6 +4,7 @@ import { IComment } from "@/types/Posts";
 import { useRef, useState } from "react";
 import { X } from "lucide-react";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 interface ICommentsForm {
   name: string;
   email: string;
@@ -71,13 +72,10 @@ const CommentsForm: React.FC<ICommentsFormProps> = ({
     }
 
     try {
-      const response = await fetch(
-        `https://portfolio.laravelhub.kyiv.ua/api/v1/blog/posts/${id}/comments`,
-        {
-          method: "POST",
-          body: formDataToSend,
-        },
-      );
+      const response = await fetch(`${API_URL}/v1/blog/posts/${id}/comments`, {
+        method: "POST",
+        body: formDataToSend,
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
