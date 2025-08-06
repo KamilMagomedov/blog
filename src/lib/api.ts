@@ -136,21 +136,29 @@ export const getContactItems =
   };
 
 export const getAuthorInformation = async (): Promise<Author> => {
-  let contacts;
-  try {
-    const response = await fetch(`${API_URL}/v1/blog/about`, {
-      next: { revalidate: 3600 },
-    });
+  // let contacts;
+  // try {
+  //   const response = await fetch(`${API_URL}/v1/blog/about`, {
+  //     next: { revalidate: 3600 },
+  //   });
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch contact items: ${response.status}`);
-    }
+  //   if (!response.ok) {
+  //     throw new Error(`Failed to fetch contact items: ${response.status}`);
+  //   }
 
-    contacts = await response.json();
-  } catch (error) {
-    console.log(error);
-  }
-  return contacts;
+  //   contacts = await response.json();
+  // } catch (error) {
+  //   console.log(error);
+  // }
+  // return contacts;
+  return `{
+    "data": {
+      "name": "Kamil Mahomedov",
+      "image": "https://portfolio.adminstore.top/storage/images/users/01JNS3CKWBAVR47DVC32751XD6.jpeg",
+      "text": "<p>A journey into coding has fueled my love for creating seamless user experiences and exploring cutting-edge web technologies. My work bridges creativity and functionality, building digital solutions that truly engage. It is a world where challenges spark innovation and learning never stops, shaping me as a developer every single day.</p>"
+    },
+    "success": true
+    }` as unknown as Author;
 };
 
 export const getTags = async (param: string | null = null): Promise<ITag[]> => {
