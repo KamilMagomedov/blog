@@ -50,17 +50,21 @@ const TagCloud: React.FC<ITagCloudProps> = ({
         </h3>
         <div className="flex">
           <p className="mr-6">
-            {postsTags.map((tag) => (
-              <span
-                key={tag.id}
-                onClick={() => !isLoading && toggleTag(tag.name)}
-                className={`mb-[7px] mr-1 inline-block cursor-pointer rounded border border-solid px-[10px] py-1 text-[11px] text-[#000] hover:border-[#000c] ${
-                  selected.includes(tag.name) ? "border-black bg-gray-200" : ""
-                } ${isLoading ? "cursor-not-allowed opacity-50" : ""}`}
-              >
-                {tag.slug.toUpperCase()}
-              </span>
-            ))}
+            {postsTags
+              ? postsTags.map((tag) => (
+                  <span
+                    key={tag.id}
+                    onClick={() => !isLoading && toggleTag(tag.name)}
+                    className={`mb-[7px] mr-1 inline-block cursor-pointer rounded border border-solid px-[10px] py-1 text-[11px] text-[#000] hover:border-[#000c] ${
+                      selected.includes(tag.name)
+                        ? "border-black bg-gray-200"
+                        : ""
+                    } ${isLoading ? "cursor-not-allowed opacity-50" : ""}`}
+                  >
+                    {tag.slug.toUpperCase()}
+                  </span>
+                ))
+              : "No tags available"}
           </p>
         </div>
       </div>

@@ -90,7 +90,7 @@ const ListPostHome = ({
                 >
                   <Image
                     src={getPostImage(post.image)}
-                    alt="My_photo"
+                    alt="My photo"
                     width={150}
                     height={150}
                     className="h-full object-cover object-center"

@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Search } from "lucide-react";
 
@@ -14,23 +14,33 @@ const SearchKeywords: React.FC<SearchKeywordsProps> = ({
   const query = searchParams?.get("search") || "";
   const [inputValue, setInputValue] = useState(query);
 
-  useEffect(() => {
-    setIsLoadingCallback(true);
-    const delayDebounceFn = setTimeout(() => {
+  const updateSearchParams = useCallback(
+    (value: string) => {
       const params = new URLSearchParams(searchParams || undefined);
-      if (inputValue) {
-        params.set("search", inputValue);
+      if (value) {
+        params.set("search", value);
       } else {
         params.delete("search");
       }
-      router.push(`?${params.toString()}`, { scroll: false });
+
+      if (params.toString() !== searchParams?.toString()) {
+        setIsLoadingCallback(true);
+        router.push(`?${params.toString()}`, { scroll: false });
+      }
+      console.log("params:", params.toString(), 1111);
+    },
+    [router, searchParams, setIsLoadingCallback],
+  );
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      updateSearchParams(inputValue);
     }, 500);
 
     return () => {
       clearTimeout(delayDebounceFn);
-      setIsLoadingCallback(false);
     };
-  }, [inputValue, router, searchParams, setIsLoadingCallback]);
+  }, [inputValue, updateSearchParams]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);

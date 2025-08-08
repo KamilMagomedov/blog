@@ -35,12 +35,13 @@ const AboutClient: React.FC<IAboutClientProps> = ({ aboutAuthorInform }) => {
   if (loading) {
     return <AboutSkeleton />;
   }
+  const mainImage = aboutAuthorInform.image;
 
   return (
     <section className="float-right flex h-full xs:w-full xs:flex-col lg:w-3/4 xl:flex-row">
       <div className="relative h-full w-1/2 xs:min-h-full xs:w-full">
         <Image
-          src={aboutAuthorInform.image ?? "/image_not_found.webp"}
+          src={mainImage ?? "/image_not_found.webp"}
           alt="My_photo"
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
