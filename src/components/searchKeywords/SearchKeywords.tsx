@@ -27,7 +27,6 @@ const SearchKeywords: React.FC<SearchKeywordsProps> = ({
         setIsLoadingCallback(true);
         router.push(`?${params.toString()}`, { scroll: false });
       }
-      console.log("params:", params.toString(), 1111);
     },
     [router, searchParams, setIsLoadingCallback],
   );
