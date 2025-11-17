@@ -12,7 +12,7 @@ export const navPages: INavPage[] = [
   { title: "Contact", href: "/contact" },
   {
     title: "Portfolio",
-    href: "https://kamilintech.shop/about",
+    href: "https://kamilintech.top/about",
     external: true,
   },
 ];
