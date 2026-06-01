@@ -124,26 +124,13 @@ const ContactInformation: React.FC = () => {
             <Tooltip>Click to write a letter.</Tooltip>
           </Link>
         </InfoCard>
-
-        <InfoCard>
-          Website:{" "}
-          <Link
-            href="https://kamilintech.shop/"
-            className="group relative hover:text-[#1eafed]"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            https://kamilintech.shop/
-            <Tooltip>Click to open my Website.</Tooltip>
-          </Link>
-        </InfoCard>
       </div>
     </Suspense>
   );
 };
 
 const InfoCard: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div className="mb-6 bg-[#f8f9fa] p-6 px-[15px] text-black xs:min-h-[70px] xs:w-full xs:text-center lg:min-h-[170px] lg:w-[45%] xl:w-1/4">
+  <div className="mb-6 bg-[#f8f9fa] p-6 px-[15px] text-black xs:min-h-[70px] xs:w-full xs:text-center lg:min-h-[170px] lg:w-[45%] xl:w-1/3">
     {children}
   </div>
 );
