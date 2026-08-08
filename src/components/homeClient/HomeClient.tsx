@@ -7,7 +7,7 @@ import WidgetsPanel from "@/components/widgetsPanel/WidgetsPanel";
 import { IPost, IPaginator } from "@/types/Posts";
 import { ICategories, IPostCalendar } from "@/types/Travel";
 import { ITag } from "@/types/Common";
-import { sendDataToBackend } from "@/lib/api";
+import { sendDataToBackend } from "@/lib/clientApi";
 
 interface IHomeClientProps {
   data: IPost[];

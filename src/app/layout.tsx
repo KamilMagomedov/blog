@@ -36,7 +36,10 @@ export default function RootLayout({
           imageSizes="(max-width: 768px) 100vw, 520px"
         />
       </head>
-      <body className={`${poppins.className} antialiased`}>
+      <body
+        className={`${poppins.className} antialiased`}
+        suppressHydrationWarning
+      >
         <BurgerMenuProvider>
           <ModalProvider>
             <main className="relative h-full w-full xs:overflow-y-auto">

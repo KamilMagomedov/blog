@@ -6,7 +6,7 @@ import WidgetsPanel from "../widgetsPanel/WidgetsPanel";
 import { ICategories, IPostCalendar } from "@/types/Travel";
 import { useCallback, useEffect, useState } from "react";
 import { ITag } from "@/types/Common";
-import { sendDataToBackend } from "@/lib/api";
+import { sendDataToBackend } from "@/lib/clientApi";
 
 interface ITravelClientProps {
   data: IPost[];

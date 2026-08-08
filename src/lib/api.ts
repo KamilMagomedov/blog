@@ -1,227 +1,234 @@
+import { sql } from "@/lib/db";
 import { Author } from "@/types/AboutAuthorInfromation";
-import { ISendDataToBackend, ITag } from "@/types/Common";
+import { ITag } from "@/types/Common";
 import { IContactsInformation } from "@/types/ContactInformation";
 import { IGetPostQueryBuilder, IPaginator, IPost } from "@/types/Posts";
 import { ICategories, IPostCalendar } from "@/types/Travel";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const formatDate = (dateStr: string) => {
+  if (!dateStr) return "";
+  const date = new Date(dateStr);
+  return date.toLocaleDateString("en-US", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+};
 
-if (!API_URL) {
-  throw new Error("Environment variable NEXT_PUBLIC_API_URL is not defined.");
-}
+const mapPostDates = (post: any) => ({
+  ...post,
+  coverImage: post.cover_image,
+  image: post.cover_image,
+  published_at: formatDate(post.published_at),
+  author: post.author || { name: "Kamil Mahomedov" },
+});
 
 export const fetchPosts = async (postQueryBuilder: IGetPostQueryBuilder) => {
   try {
-    const response = await fetch(
-      `${API_URL}/v1/blog/posts?${postQueryBuilder.build()}`,
-      {
-        next: { revalidate: 3600 },
-      },
-    );
+    const queryString = postQueryBuilder?.build ? postQueryBuilder.build() : "";
+    const searchParams = new URLSearchParams(queryString);
+    const type = searchParams.get("type");
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch posts: ${response.status} ${response}`);
-    }
-
-    const data = await response.json();
+    const posts = type
+      ? await sql`
+          SELECT id, category_id, title, type, excerpt, content, cover_image, published_at 
+          FROM posts 
+          WHERE type = ${type}
+          ORDER BY published_at DESC 
+          LIMIT 10
+        `
+      : await sql`
+          SELECT id, category_id, title, type, excerpt, content, cover_image, published_at 
+          FROM posts 
+          ORDER BY published_at DESC 
+          LIMIT 10
+        `;
 
     return {
-      data: data.data as IPost[],
-      paginator: data.paginator as IPaginator,
-      success: data.success,
+      data: posts.map(mapPostDates) as unknown as IPost[],
+      paginator: {
+        current_page: 1,
+        per_page: 10,
+        last_page: 1,
+        total: posts.length,
+        has_more: false,
+      } as IPaginator,
+      success: true,
     };
   } catch (error) {
-    console.log(error);
+    console.error("Error fetching posts:", error);
+    return {
+      data: [] as IPost[],
+      paginator: {
+        current_page: 1,
+        per_page: 10,
+        last_page: 1,
+        total: 0,
+        has_more: false,
+      } as IPaginator,
+      success: false,
+    };
   }
-  return {
-    data: [] as IPost[],
-    paginator: {} as IPaginator,
-    success: false,
-  };
 };
 
+// 2. Получение одного поста по ID
 export const getPostById = async (postId: string): Promise<IPost> => {
   if (!postId) throw new Error("Post Id is required");
 
   try {
-    const response = await fetch(`${API_URL}/v1/blog/posts/${postId}`, {
-      next: { revalidate: 3600 },
-    });
+    const posts = await sql`
+      SELECT id, category_id, title, type, excerpt, content, cover_image, published_at 
+      FROM posts 
+      WHERE id = ${postId}
+      LIMIT 1
+    `;
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch post: ${response.status}`);
+    if (!posts.length) {
+      throw new Error("Post not found");
     }
 
-    const post = await response.json();
-    return post.data as IPost;
+    return mapPostDates(posts[0]) as unknown as IPost;
   } catch (error) {
-    console.log(error);
+    console.error("Error fetching post by id:", error);
     throw error;
   }
 };
 
+// 3. Получение категорий
 export const getCategories = async (): Promise<ICategories | null> => {
   try {
-    const response = await fetch(
-      `${API_URL}/v1/blog/categories?with_count_posts=1`,
-      {
-        next: { revalidate: 86400 },
-      },
-    );
+    const categories = await sql`
+      SELECT c.id, c.name, COUNT(p.id)::int as count_posts
+      FROM categories c
+      LEFT JOIN posts p ON p.category_id = c.id
+      GROUP BY c.id, c.name
+    `;
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch categories: ${response.status}`);
-    }
-
-    return await response.json();
+    return { data: categories } as unknown as ICategories;
   } catch (error) {
-    console.log(error);
+    console.error("Error fetching categories:", error);
     return null;
   }
 };
 
+// 4. Календарь постов
 export const getPostsCalendar = async (): Promise<IPostCalendar[]> => {
   try {
-    const response = await fetch(`${API_URL}/v1/blog/posts-calendar`, {
-      next: { revalidate: 3600 },
+    const posts = await sql`
+      SELECT published_at 
+      FROM posts 
+      WHERE published_at IS NOT NULL 
+      ORDER BY published_at DESC
+    `;
+
+    // Группируем посты по годам и месяцам
+    const calendarMap: Record<
+      string,
+      Record<string, { monthName: string; total: number }>
+    > = {};
+
+    posts.forEach((post) => {
+      const date = new Date(post.published_at);
+      const year = date.getFullYear().toString();
+      const monthNum = (date.getMonth() + 1).toString().padStart(2, "0");
+      const monthName = date.toLocaleString("en-US", { month: "long" });
+
+      if (!calendarMap[year]) {
+        calendarMap[year] = {};
+      }
+
+      if (!calendarMap[year][monthNum]) {
+        calendarMap[year][monthNum] = { monthName, total: 0 };
+      }
+
+      calendarMap[year][monthNum].total += 1;
     });
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch posts calendar: ${response.status}`);
-    }
-
-    const calendar = await response.json().then((res) => res.data);
-
-    return calendar || [];
+    // Преобразуем структуру в массив [{ year, months: [...] }]
+    return Object.keys(calendarMap).map((year) => ({
+      year,
+      months: Object.keys(calendarMap[year]).map((month) => ({
+        month,
+        monthName: calendarMap[year][month].monthName,
+        total: calendarMap[year][month].total,
+      })),
+    })) as unknown as IPostCalendar[];
   } catch (error) {
     console.error("Error fetching posts calendar:", error);
     return [];
   }
 };
 
+// 5. Комментарии
 export const getComments = async (id: string) => {
   try {
-    const response = await fetch(`${API_URL}/v1/blog/posts/${id}/comments`);
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch comments: ${response.status}`);
-    }
-
-    const comments = await response.json();
-
-    return comments.data;
+    return [];
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 
+// 6. Контакты
 export const getContactItems =
   async (): Promise<IContactsInformation | null> => {
     try {
-      const response = await fetch(`${API_URL}/contact-items`, {
-        next: { revalidate: 3600 },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch contact items: ${response.status}`);
-      }
-
-      const contactItems = await response.json();
-
-      return contactItems;
+      return null;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return null;
     }
   };
 
+// 7. Об авторе
 export const getAuthorInformation = async (): Promise<Author> => {
-  let contacts;
-  try {
-    const response = await fetch(`${API_URL}/v1/blog/about`, {
-      next: { revalidate: 3600 },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch contact items: ${response.status}`);
-    }
-
-    contacts = await response.json();
-  } catch (error) {
-    console.log(error);
-  }
-  return contacts;
+  return {} as Author;
 };
 
+// 8. Теги
 export const getTags = async (param: string | null = null): Promise<ITag[]> => {
-  let tags;
   try {
-    const response = await fetch(`${API_URL}/v1/blog/posts/tags?type=${param}`);
+    const tags = param
+      ? await sql`
+          SELECT id, name, slug 
+          FROM tags 
+          WHERE slug = ${param} OR name ILIKE ${"%" + param + "%"}
+        `
+      : await sql`SELECT id, name, slug FROM tags`;
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch contact items: ${response.status}`);
-    }
-    const takeTags = await response.json();
-    tags = takeTags.data;
-  } catch (error) {
-    console.log(error);
+    return tags as unknown as ITag[];
+  } catch {
+    const defaultTags = [
+      { id: 1, name: "Travel", slug: "travel" },
+      { id: 2, name: "Development", slug: "development" },
+      { id: 3, name: "Next.js", slug: "nextjs" },
+    ];
+
+    if (!param) return defaultTags as unknown as ITag[];
+
+    return defaultTags.filter(
+      (tag) =>
+        tag.slug.toLowerCase() === param.toLowerCase() ||
+        tag.name.toLowerCase().includes(param.toLowerCase()),
+    ) as unknown as ITag[];
   }
-  return tags;
 };
 
+// 9. Лайки и Дизлайки
 export const likePost = async (id: number): Promise<boolean> => {
-  let result = false;
   try {
-    const response = await fetch(`${API_URL}/v1/blog/posts/${id}/likes`, {
-      method: "POST",
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch contact items: ${response.status}`);
-    }
-    result = true;
+    await sql`UPDATE posts SET likes = COALESCE(likes, 0) + 1 WHERE id = ${id}`;
+    return true;
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    return false;
   }
-  return result;
 };
 
 export const disLikePost = async (id: number): Promise<boolean> => {
-  let result = false;
   try {
-    const response = await fetch(`${API_URL}/v1/blog/posts/${id}/dislikes`, {
-      method: "POST",
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch contact items: ${response.status}`);
-    }
-    result = true;
-  } catch (error) {
-    console.log(error);
-  }
-  return result;
-};
-
-export const sendDataToBackend = async (
-  data: ISendDataToBackend,
-): Promise<boolean> => {
-  try {
-    const response = await fetch(`${API_URL}/user-visits`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to send data: ${response.status}`);
-    }
-
     return true;
   } catch (error) {
-    console.error("Error sending data to the backend: ", error);
+    console.error(error);
     return false;
   }
 };

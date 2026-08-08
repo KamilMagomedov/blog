@@ -1,7 +1,8 @@
 "use client";
 
 import ContactSkeleton from "@/app/contact/ui/ContactSkeleton";
-import { getContactItems, sendDataToBackend } from "@/lib/api";
+import { getContactItems } from "@/lib/api";
+import { sendDataToBackend } from "@/lib/clientApi";
 import { getFullPath } from "@/lib/googleMaps";
 import { lora } from "@/styles/fonts";
 import { IContactInformation } from "@/types/ContactInformation";

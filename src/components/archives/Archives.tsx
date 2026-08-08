@@ -33,13 +33,13 @@ const Archives: React.FC<IPostsCalendarProps> = ({
           Archives
         </h3>
         <ul className="mb-4">
-          {postsCalendar.map((calendar) => {
+          {postsCalendar.map((calendar, index) => {
             const { year, months } = calendar;
             const isOpen = openYear === year;
 
             return (
               <li
-                key={year}
+                key={year || `year-${index}`}
                 className="mb-[10px] border-b border-[#dee2e6] pb-[10px]"
               >
                 <button
@@ -59,8 +59,11 @@ const Archives: React.FC<IPostsCalendarProps> = ({
                     isOpen ? "mt-2 max-h-96 opacity-100" : "max-h-0 opacity-0"
                   }`}
                 >
-                  {months.map((month) => (
-                    <li key={month.monthName} className="flex px-4 py-1">
+                  {months?.map((month, mIndex) => (
+                    <li
+                      key={month.month || month.monthName || `month-${mIndex}`}
+                      className="flex px-4 py-1"
+                    >
                       <button
                         onClick={() => showFromArchive(year, month.month)}
                         className="flex w-full justify-between"

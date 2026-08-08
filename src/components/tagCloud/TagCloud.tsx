@@ -61,7 +61,7 @@ const TagCloud: React.FC<ITagCloudProps> = ({
                         : ""
                     } ${isLoading ? "cursor-not-allowed opacity-50" : ""}`}
                   >
-                    {tag.slug.toUpperCase()}
+                    {(tag.slug || tag.name || "").toUpperCase()}
                   </span>
                 ))
               : "No tags available"}
