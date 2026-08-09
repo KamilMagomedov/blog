@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import SliderPost from "../sliderPost/SliderPost";
 import LikeButton from "../likeButton/LikeButton";
 import { EyeIcon } from "lucide-react";
@@ -13,17 +13,38 @@ interface IPostBodyProps {
 }
 
 const PostBody: React.FC<IPostBodyProps> = ({ post }) => {
-  const [loading, setLoading] = useState<boolean>(true);
+  const [views, setViews] = useState<number>(post?.views || 0);
+  const viewIncremented = useRef(false);
 
   useEffect(() => {
-    if (post !== null || post !== undefined) {
-      setLoading(false);
-    }
-  }, [post]);
+    if (viewIncremented.current || !post?.id) return;
 
-  if (loading) {
+    const viewedPosts: (string | number)[] = JSON.parse(
+      sessionStorage.getItem("viewed_posts") || "[]",
+    );
+
+    if (!viewedPosts.includes(post.id)) {
+      viewIncremented.current = true;
+
+      fetch(`/api/posts/${post.id}/views`, { method: "POST" })
+        .then((res) => {
+          if (res.ok) {
+            setViews((prev) => prev + 1);
+            sessionStorage.setItem(
+              "viewed_posts",
+              JSON.stringify([...viewedPosts, post.id]),
+            );
+          }
+        })
+        .catch((err) => console.error("Failed to track view:", err));
+    }
+  }, [post?.id]);
+
+  if (!post) {
     return <PostSkeleton />;
   }
+
+  const articleContent = post.content || post.description || post.excerpt || "";
 
   return (
     <>
@@ -50,16 +71,16 @@ const PostBody: React.FC<IPostBodyProps> = ({ post }) => {
       <div
         className="mb-6 break-words text-left text-gray-800 xs:text-[13px] md:text-lg [&_pre]:whitespace-pre-wrap"
         dangerouslySetInnerHTML={{
-          __html: post.description,
+          __html: articleContent,
         }}
-      ></div>
+      />
 
       <div className="mb-6 flex items-center space-x-6 xs:justify-around 2xl:justify-start">
         <div className="flex items-center text-gray-600">
           <LikeButton initialLikes={post.likes || 0} id={post.id} />
         </div>
         <div className="flex items-center text-gray-600">
-          <EyeIcon className="mr-2 h-5 w-5" /> {post.views || 0} views
+          <EyeIcon className="mr-2 h-5 w-5" /> {views} views
         </div>
       </div>
 

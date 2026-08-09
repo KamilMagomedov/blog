@@ -1,38 +1,47 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
-import { disLikePost, likePost } from "@/lib/api";
+import { disLikePost, likePost } from "@/lib/clientApi";
 
-const LikeButton: React.FC<{ initialLikes: number; id: number }> = ({
-  initialLikes,
-  id,
-}) => {
+interface ILikeButtonProps {
+  initialLikes: number;
+  id: number | string;
+}
+
+const LikeButton: React.FC<ILikeButtonProps> = ({ initialLikes, id }) => {
+  const numericId = Number(id);
+
   const [amountLike, setAmountLike] = useState<number>(initialLikes);
   const [animate, setAnimate] = useState<boolean>(false);
-  const getLikesFromStorage = (): number[] => {
+  const [like, setLike] = useState<boolean>(false);
+
+  useEffect(() => {
     const likes: string | null = localStorage.getItem("likes");
     const decodeLikes: number[] = likes ? JSON.parse(likes) : [];
-    return decodeLikes;
-  };
-  const [like, setLike] = useState<boolean>(getLikesFromStorage().includes(id));
+    if (decodeLikes.includes(numericId)) {
+      setLike(true);
+    }
+  }, [numericId]);
 
   const handleLike = () => {
-    let decodeLikes = getLikesFromStorage();
+    const likes: string | null = localStorage.getItem("likes");
+    let decodeLikes: number[] = likes ? JSON.parse(likes) : [];
 
-    if (decodeLikes?.includes(id)) {
+    if (decodeLikes.includes(numericId)) {
       setAmountLike((prev) => (prev > 0 ? prev - 1 : 0));
       setLike(false);
-      decodeLikes = decodeLikes.filter((paramId: number) => {
-        return paramId !== id;
-      });
-      disLikePost(id);
+      decodeLikes = decodeLikes.filter(
+        (paramId: number) => paramId !== numericId,
+      );
+      disLikePost(numericId);
     } else {
       setAmountLike((prev) => prev + 1);
       setLike(true);
-      likePost(id);
-      decodeLikes?.push(id);
+      likePost(numericId);
+      decodeLikes.push(numericId);
     }
+
     localStorage.setItem("likes", JSON.stringify(decodeLikes));
     setAnimate(true);
 
@@ -50,7 +59,9 @@ const LikeButton: React.FC<{ initialLikes: number; id: number }> = ({
         <Heart fill={like ? "red" : "none"} className="h-6 w-6" />
       </div>
       <span
-        className={`font-semibold text-gray-800 ${animate ? "animate-like" : ""}`}
+        className={`font-semibold text-gray-800 ${
+          animate ? "animate-like" : ""
+        }`}
       >
         {amountLike}
       </span>

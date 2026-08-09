@@ -5,23 +5,26 @@ export interface IPosts {
 }
 
 export interface IPost {
-  id: number;
-  category: ICategory;
-  comments_count: number;
-  author: IAuthor;
-  meta_title: string;
-  meta_description: string;
-  meta_keywords: string;
+  id: number | string;
   title: string;
-  description: string;
-  image: string;
-  images: string[];
   type: string;
-  slug: null | string;
+  description?: string;
+  content?: string;
+  excerpt?: string;
+  cover_image?: string;
+  images?: string[];
+  likes?: number;
   views?: number;
-  likes: number;
-  published_at: string;
-  tags?: string[];
+  published_at?: string;
+  author?: {
+    name: string;
+  };
+  category?: {
+    title: string;
+  };
+  meta_title?: string;
+  meta_description?: string;
+  meta_keywords?: string[];
 }
 
 export interface ICategory {

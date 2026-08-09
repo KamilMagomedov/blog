@@ -1,43 +1,29 @@
 "use client";
 
-import ContactSkeleton from "@/app/contact/ui/ContactSkeleton";
-import { getContactItems } from "@/lib/api";
 import { sendDataToBackend } from "@/lib/clientApi";
 import { getFullPath } from "@/lib/googleMaps";
 import { lora } from "@/styles/fonts";
 import { IContactInformation } from "@/types/ContactInformation";
 import Link from "next/link";
-import React, { Suspense, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
-const ContactInformation: React.FC = () => {
+interface IContactProps {
+  initialContacts: IContactInformation[];
+}
+
+const ContactInformation: React.FC<IContactProps> = ({
+  initialContacts = [],
+}) => {
   const [isCopied, setIsCopied] = useState(false);
-  const [contactInformations, setContactInformations] = useState<
-    IContactInformation[] | null
-  >(null);
-  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await getContactItems();
-
-        if (data?.success && Array.isArray(data.data)) {
-          setContactInformations(data.data);
-        } else {
-          console.error("Invalid contact information format", data);
-          setContactInformations([]);
-        }
-      } catch (error) {
-        console.error("Error fetching contact information", error);
-        setContactInformations([]);
-      } finally {
-        setTimeout(() => {
-          setLoading(false);
-        }, 500);
-      }
-    };
-
-    fetchData();
+    if (typeof window !== "undefined") {
+      sendDataToBackend({
+        userAgent: navigator.userAgent,
+        language: navigator.language,
+        type: window.location.href,
+      });
+    }
   }, []);
 
   useEffect(() => {
@@ -47,41 +33,26 @@ const ContactInformation: React.FC = () => {
     }
   }, [isCopied]);
 
-  useEffect(() => {
-    const userAgent = navigator.userAgent;
-    const language = navigator.language;
-    const type = window.location.href;
-
-    const userData = {
-      userAgent,
-      language,
-      type,
-    };
-
-    sendDataToBackend(userData);
-  }, []);
-
-  const inform = (key: string): IContactInformation | undefined =>
-    Array.isArray(contactInformations)
-      ? contactInformations.find(
-          (item) => item.title.toLowerCase() === key.toLowerCase(),
-        )
-      : undefined;
-
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(inform("Phone")?.value as string);
-    setIsCopied(true);
+  const inform = (key: string): IContactInformation | undefined => {
+    const contacts = initialContacts ?? [];
+    return contacts.find(
+      (item) => item?.title?.toLowerCase() === key.toLowerCase(),
+    );
   };
 
-  const address = inform("Location")?.value as string;
+  const copyToClipboard = () => {
+    const phone = inform("Phone")?.value;
+    if (phone) {
+      navigator.clipboard.writeText(phone);
+      setIsCopied(true);
+    }
+  };
+
+  const address = inform("Location")?.value || "";
   const googleMapsUrl = getFullPath(address);
 
-  if (loading) {
-    return <ContactSkeleton />;
-  }
-
   return (
-    <Suspense fallback={<ContactSkeleton />}>
+    <>
       <h2
         className={`${lora.className} mb-6 text-[1.75rem] font-normal leading-6 text-black xs:text-center lg:text-left`}
       >
@@ -98,7 +69,7 @@ const ContactInformation: React.FC = () => {
           >
             Address:{" "}
             <span className="hover:text-[#1eafed]">
-              {inform("Location")?.value}
+              {inform("Location")?.value || "N/A"}
             </span>
             <Tooltip>Click to open the map.</Tooltip>
           </Link>
@@ -108,7 +79,7 @@ const ContactInformation: React.FC = () => {
           <button onClick={copyToClipboard} className="group relative">
             Phone:{" "}
             <span className="hover:text-[#1eafed]">
-              {inform("Phone")?.value}
+              {inform("Phone")?.value || "N/A"}
             </span>
             <Tooltip>Click to copy phone number.</Tooltip>
             {isCopied && <Tooltip>Copied!</Tooltip>}
@@ -121,12 +92,12 @@ const ContactInformation: React.FC = () => {
             href={`mailto:${inform("Email")?.value}`}
             className="group relative break-words hover:text-[#1eafed]"
           >
-            {inform("Email")?.value}
+            {inform("Email")?.value || "N/A"}
             <Tooltip>Click to write a letter.</Tooltip>
           </Link>
         </InfoCard>
       </div>
-    </Suspense>
+    </>
   );
 };
 

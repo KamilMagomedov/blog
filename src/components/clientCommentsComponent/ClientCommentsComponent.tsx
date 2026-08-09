@@ -6,7 +6,7 @@ import { IComment } from "@/types/Posts";
 
 interface IPropsClientCommentsComponent {
   comments: IComment[];
-  id: number;
+  id: number | string;
 }
 const ClientCommentsComponent: React.FC<IPropsClientCommentsComponent> = ({
   comments,

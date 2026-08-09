@@ -22,9 +22,16 @@ export async function generateMetadata({
     };
   }
 
+  const rawDescription =
+    post.meta_description || post.title || "Blog post details";
+  const description =
+    rawDescription.length > 150
+      ? `${rawDescription.substring(0, 150)}...`
+      : rawDescription;
+
   return {
-    title: `${post.meta_title} | Blog`,
-    description: post.meta_description.substring(0, 150) + "...",
+    title: `${post.meta_title || post.title || "Post"} | Blog`,
+    description,
     keywords: post.meta_keywords || ["blog", "post", "frontend", "programming"],
   };
 }
@@ -45,7 +52,7 @@ const PostPage: React.FC<PostPageProps> = async ({ params }) => {
       <div className="container mx-auto px-[15px] sm:w-[540px] md:w-[720px] lg:w-[960px] lg:max-w-full xl:w-[1140px]">
         <div className="mx-auto px-4 lg:w-2/3 2xl:pb-12">
           <PostBody post={post} />
-          <ClientCommentsComponent comments={comments} id={post.id} />
+          <ClientCommentsComponent comments={comments || []} id={post.id} />
         </div>
       </div>
     </section>

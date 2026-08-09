@@ -50,7 +50,7 @@ const AboutClient: React.FC<IAboutClientProps> = ({ aboutAuthorInform }) => {
             </span>
             , a passionate Frontend Developer & Tech Enthusiast.
           </h2>
-          <p
+          <div
             className="xs:pb-[30px]"
             dangerouslySetInnerHTML={{
               __html:

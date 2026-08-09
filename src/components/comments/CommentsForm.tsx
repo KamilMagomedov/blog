@@ -14,7 +14,7 @@ interface ICommentsForm {
 }
 
 interface ICommentsFormProps {
-  id: number;
+  id: number | string;
   commentReply: null | undefined | number;
   comments: IComment[];
   leaveCommentUnderComment: boolean;

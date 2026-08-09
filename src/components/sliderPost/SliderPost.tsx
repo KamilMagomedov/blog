@@ -8,11 +8,22 @@ import React, { useEffect, useState } from "react";
 interface ISliderPostsProps {
   post: IPost;
 }
+
 const SliderPost: React.FC<ISliderPostsProps> = ({ post }) => {
-  const images = post.images;
-  const extendedImages = [images[images.length - 1], ...images, images[0]];
+  const images = post?.images || [];
+
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(1);
   const [isTransitioning, setIsTransitioning] = useState<boolean>(true);
+
+  if (!images || images.length === 0) {
+    return (
+      <div className="relative mx-auto mb-6 flex h-[300px] max-w-[600px] items-center justify-center overflow-hidden rounded-xl bg-gray-200 text-gray-500">
+        No image
+      </div>
+    );
+  }
+
+  const extendedImages = [images[images.length - 1], ...images, images[0]];
 
   useEffect(() => {
     if (currentImageIndex === extendedImages.length - 1) {
@@ -37,14 +48,6 @@ const SliderPost: React.FC<ISliderPostsProps> = ({ post }) => {
     }
   }, [isTransitioning]);
 
-  if (images.length === 0) {
-    return (
-      <div className="relative mx-auto mb-6 flex h-[300px] max-w-[600px] items-center justify-center overflow-hidden rounded-xl bg-gray-200 text-gray-500">
-        No image
-      </div>
-    );
-  }
-
   const nextSlide = () => {
     if (!isTransitioning) return;
     setIsTransitioning(true);
@@ -60,12 +63,14 @@ const SliderPost: React.FC<ISliderPostsProps> = ({ post }) => {
   return (
     <div className="relative mx-auto mb-6 max-w-[600px] overflow-hidden rounded-xl bg-gray-200">
       <div className="relative flex h-[270px] w-full">
-        <button
-          onClick={prevSlide}
-          className="absolute left-[10px] top-1/2 z-10 -translate-y-[50%] cursor-pointer rounded-full bg-[#241f2852] text-white"
-        >
-          <CircleArrowLeft size={36} />
-        </button>
+        {images.length > 1 && (
+          <button
+            onClick={prevSlide}
+            className="absolute left-[10px] top-1/2 z-10 -translate-y-[50%] cursor-pointer rounded-full bg-[#241f2852] text-white"
+          >
+            <CircleArrowLeft size={36} />
+          </button>
+        )}
 
         <div
           className={`flex w-full ${
@@ -97,12 +102,14 @@ const SliderPost: React.FC<ISliderPostsProps> = ({ post }) => {
           ))}
         </div>
 
-        <button
-          onClick={nextSlide}
-          className="absolute right-[10px] top-1/2 z-10 -translate-y-[50%] cursor-pointer rounded-full bg-[#241f2852] text-white"
-        >
-          <CircleArrowRight size={36} />
-        </button>
+        {images.length > 1 && (
+          <button
+            onClick={nextSlide}
+            className="absolute right-[10px] top-1/2 z-10 -translate-y-[50%] cursor-pointer rounded-full bg-[#241f2852] text-white"
+          >
+            <CircleArrowRight size={36} />
+          </button>
+        )}
       </div>
     </div>
   );

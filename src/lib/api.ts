@@ -1,7 +1,10 @@
 import { sql } from "@/lib/db";
-import { Author } from "@/types/AboutAuthorInfromation";
+import { Data } from "@/types/AboutAuthorInfromation";
 import { ITag } from "@/types/Common";
-import { IContactsInformation } from "@/types/ContactInformation";
+import {
+  IContactInformation,
+  IContactsInformation,
+} from "@/types/ContactInformation";
 import { IGetPostQueryBuilder, IPaginator, IPost } from "@/types/Posts";
 import { ICategories, IPostCalendar } from "@/types/Travel";
 
@@ -77,7 +80,7 @@ export const getPostById = async (postId: string): Promise<IPost> => {
 
   try {
     const posts = await sql`
-      SELECT id, category_id, title, type, excerpt, content, cover_image, published_at 
+      SELECT * 
       FROM posts 
       WHERE id = ${postId}
       LIMIT 1
@@ -87,7 +90,20 @@ export const getPostById = async (postId: string): Promise<IPost> => {
       throw new Error("Post not found");
     }
 
-    return mapPostDates(posts[0]) as unknown as IPost;
+    const rawPost = posts[0];
+    const mappedPost = mapPostDates(rawPost);
+
+    return {
+      ...mappedPost,
+      images:
+        Array.isArray(rawPost.images) && rawPost.images.length > 0
+          ? rawPost.images
+          : rawPost.cover_image
+            ? [rawPost.cover_image]
+            : [],
+      likes: rawPost.likes ?? 0,
+      views: rawPost.views ?? 0,
+    } as unknown as IPost;
   } catch (error) {
     console.error("Error fetching post by id:", error);
     throw error;
@@ -172,16 +188,42 @@ export const getComments = async (id: string) => {
 export const getContactItems =
   async (): Promise<IContactsInformation | null> => {
     try {
-      return null;
+      const data = await sql`
+        SELECT id, title, value 
+        FROM contact_information
+      `;
+
+      return {
+        data: data as unknown as IContactInformation[],
+        success: true,
+      };
     } catch (error) {
-      console.error(error);
-      return null;
+      console.error("Error fetching contact items:", error);
+      return {
+        data: null,
+        success: false,
+      };
     }
   };
 
 // 7. Об авторе
-export const getAuthorInformation = async (): Promise<Author> => {
-  return {} as Author;
+export const getAuthorInformation = async (): Promise<Data | null> => {
+  try {
+    const author = await sql`
+      SELECT id, name, email, phone, image, text 
+      FROM author 
+      LIMIT 1
+    `;
+
+    if (author && author.length > 0) {
+      return author[0] as unknown as Data;
+    }
+
+    return null;
+  } catch (error) {
+    console.error("Error fetching author info:", error);
+    return null;
+  }
 };
 
 // 8. Теги

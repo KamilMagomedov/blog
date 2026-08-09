@@ -1,5 +1,5 @@
 import { getAuthorInformation } from "@/lib/api";
-import { Author } from "@/types/AboutAuthorInfromation";
+import { Data } from "@/types/AboutAuthorInfromation";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 
@@ -21,9 +21,9 @@ export const metadata: Metadata = {
 };
 
 const AboutPage: React.FC = async () => {
-  const aboutAuthorInform: Author = await getAuthorInformation();
+  const aboutAuthorInform: Data | null = await getAuthorInformation();
 
-  return <AboutClient aboutAuthorInform={aboutAuthorInform.data} />;
+  return <AboutClient aboutAuthorInform={aboutAuthorInform} />;
 };
 
 export default AboutPage;
