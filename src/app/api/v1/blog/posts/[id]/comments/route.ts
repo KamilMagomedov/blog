@@ -1,5 +1,6 @@
 import { sql } from "@/lib/db";
 import { NextResponse } from "next/server";
+import { put } from "@vercel/blob";
 import nodemailer from "nodemailer";
 
 export async function POST(
@@ -12,43 +13,77 @@ export async function POST(
 
     let name = "";
     let email = "";
-    let content = "";
+    let comment = "";
+    let parentId: string | null = null;
+    let logoUrl: string | null = null;
 
     if (contentType.includes("multipart/form-data")) {
       const formData = await request.formData();
       name = (formData.get("name") as string) || "";
       email = (formData.get("email") as string) || "";
-      content =
+      comment =
+        (formData.get("comment") as string) ||
         (formData.get("content") as string) ||
-        (formData.get("message") as string) ||
         "";
+      parentId = (formData.get("parent_id") as string) || null;
+
+      const logoFile = formData.get("logo") as File | null;
+      if (logoFile && logoFile.size > 0) {
+        const blob = await put(
+          `comments/${Date.now()}-${logoFile.name}`,
+          logoFile,
+          {
+            access: "public",
+          },
+        );
+        logoUrl = blob.url;
+      }
     } else {
       const body = await request.json();
       name = body.name || "";
       email = body.email || "";
-      content = body.content || body.message || "";
+      comment = body.comment || body.content || "";
+      parentId = body.parent_id || null;
+    }
+
+    if (!name || !email || !comment) {
+      return NextResponse.json(
+        { message: "Name, email and comment are required" },
+        { status: 400 },
+      );
     }
 
     await sql`
-      INSERT INTO comments (post_id, author_name, author_email, content)
-      VALUES (${id}, ${name}, ${email}, ${content})
+      INSERT INTO comments (post_id, name, email, comment, logo, parent_id)
+      VALUES (
+        ${id}, 
+        ${name}, 
+        ${email}, 
+        ${comment}, 
+        ${logoUrl}, 
+        ${parentId ? Number(parentId) : null}
+      )
     `;
 
     if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-      const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS,
-        },
-      });
+      try {
+        const transporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS,
+          },
+        });
 
-      await transporter.sendMail({
-        from: process.env.EMAIL_USER,
-        to: process.env.EMAIL_USER,
-        subject: `Новый комментарий к посту #${id} от ${name}`,
-        text: `Имя: ${name}\nEmail: ${email}\n\nСообщение:\n${content}`,
-      });
+        await transporter.sendMail({
+          from: process.env.EMAIL_USER,
+          to: process.env.EMAIL_USER,
+          subject: `Новый комментарий к посту #${id} от ${name}`,
+          text: `Имя: ${name}\nEmail: ${email}\n\nКомментарий:\n${comment}`,
+        });
+      } catch (emailError) {
+        console.error("Gmail error (comment saved anyway):", emailError);
+      }
     }
 
     return NextResponse.json({

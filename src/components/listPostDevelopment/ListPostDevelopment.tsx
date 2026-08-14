@@ -19,7 +19,7 @@ const ListPostDevelopment: React.FC<IListPostDevelopmentProps> = React.memo(
     const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
-      if (data !== null || data !== undefined) {
+      if (data !== null && data !== undefined) {
         setLoading(false);
       }
     }, [data]);
@@ -110,7 +110,7 @@ const ListPostDevelopment: React.FC<IListPostDevelopmentProps> = React.memo(
                       className="mr-[10px]"
                     />{" "}
                     <span className="mr-[10px] text-sm text-[#6c757d]">
-                      {post.published_at}
+                      {post.published_at ?? ""}
                     </span>
                   </p>
                   <span className="xs:mr-0 md:mr-[10px]">{post.type}</span>
@@ -120,7 +120,7 @@ const ListPostDevelopment: React.FC<IListPostDevelopmentProps> = React.memo(
                       color="#6c757d"
                       className="mr-[10px]"
                     />
-                    <CommentsCount count={post.comments_count || 0} />
+                    <CommentsCount count={post.comments_count ?? 0} />
                   </div>
                   <span className="flex items-center">
                     <Heart
@@ -128,13 +128,13 @@ const ListPostDevelopment: React.FC<IListPostDevelopmentProps> = React.memo(
                       color="#6c757d"
                       className="mr-[6px] h-[15px] w-[15px]"
                     />
-                    {post.likes}
+                    {post.likes ?? 0}
                   </span>
                 </div>
                 <p
                   className="mb-6 line-clamp-3 xs:mb-0"
                   dangerouslySetInnerHTML={{
-                    __html: post.description,
+                    __html: post.description ?? "",
                   }}
                 ></p>
                 <Link

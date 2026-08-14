@@ -5,7 +5,12 @@ import {
   IContactInformation,
   IContactsInformation,
 } from "@/types/ContactInformation";
-import { IGetPostQueryBuilder, IPaginator, IPost } from "@/types/Posts";
+import {
+  IGetPostQueryBuilder,
+  IPaginator,
+  IPost,
+  IComment,
+} from "@/types/Posts";
 import { ICategories, IPostCalendar } from "@/types/Travel";
 
 const formatDate = (dateStr: string) => {
@@ -18,34 +23,135 @@ const formatDate = (dateStr: string) => {
   });
 };
 
-const mapPostDates = (post: any) => ({
-  ...post,
-  coverImage: post.cover_image,
-  image: post.cover_image,
-  published_at: formatDate(post.published_at),
-  author: post.author || { name: "Kamil Mahomedov" },
-});
+const mapPostDates = (post: any) => {
+  const authorAvatar =
+    post.author_avatar || post.author?.avatar || "/author.jpg";
+
+  return {
+    ...post,
+    coverImage: post.cover_image,
+    image: post.cover_image,
+    published_at: formatDate(post.published_at),
+    likes: post.likes ?? 0,
+    views: post.views ?? 0,
+    comments_count: post.comments_count ?? 0,
+    author: {
+      name: post.author_name || post.author?.name || "Kamil Mahomedov",
+      avatar: authorAvatar,
+      image: authorAvatar,
+    },
+  };
+};
 
 export const fetchPosts = async (postQueryBuilder: IGetPostQueryBuilder) => {
   try {
     const queryString = postQueryBuilder?.build ? postQueryBuilder.build() : "";
     const searchParams = new URLSearchParams(queryString);
-    const type = searchParams.get("type");
 
-    const posts = type
-      ? await sql`
-          SELECT id, category_id, title, type, excerpt, content, cover_image, published_at 
-          FROM posts 
-          WHERE type = ${type}
-          ORDER BY published_at DESC 
-          LIMIT 10
-        `
-      : await sql`
-          SELECT id, category_id, title, type, excerpt, content, cover_image, published_at 
-          FROM posts 
-          ORDER BY published_at DESC 
-          LIMIT 10
-        `;
+    const type = searchParams.get("type");
+    const search = searchParams.get("search");
+
+    const searchPattern = search ? `%${search}%` : null;
+
+    let posts = [];
+
+    if (searchPattern && type) {
+      posts = await sql`
+        SELECT
+          posts.id,
+          posts.category_id,
+          posts.title,
+          posts.type,
+          posts.excerpt,
+          posts.content,
+          posts.cover_image,
+          posts.published_at,
+          posts.likes,
+          posts.views,
+          (
+            SELECT COUNT(*)::int
+            FROM comments c
+            WHERE c.post_id = posts.id
+          ) AS comments_count
+        FROM posts
+        WHERE posts.type = ${type}
+          AND (
+            posts.title ILIKE ${searchPattern}
+            OR posts.content ILIKE ${searchPattern}
+          )
+        ORDER BY posts.published_at DESC
+        LIMIT 10
+      `;
+    } else if (searchPattern) {
+      posts = await sql`
+        SELECT
+          posts.id,
+          posts.category_id,
+          posts.title,
+          posts.type,
+          posts.excerpt,
+          posts.content,
+          posts.cover_image,
+          posts.published_at,
+          posts.likes,
+          posts.views,
+          (
+            SELECT COUNT(*)::int
+            FROM comments c
+            WHERE c.post_id = posts.id
+          ) AS comments_count
+        FROM posts
+        WHERE posts.title ILIKE ${searchPattern}
+          OR posts.content ILIKE ${searchPattern}
+        ORDER BY posts.published_at DESC
+        LIMIT 10
+      `;
+    } else if (type) {
+      posts = await sql`
+        SELECT
+          posts.id,
+          posts.category_id,
+          posts.title,
+          posts.type,
+          posts.excerpt,
+          posts.content,
+          posts.cover_image,
+          posts.published_at,
+          posts.likes,
+          posts.views,
+          (
+            SELECT COUNT(*)::int
+            FROM comments c
+            WHERE c.post_id = posts.id
+          ) AS comments_count
+        FROM posts
+        WHERE posts.type = ${type}
+        ORDER BY posts.published_at DESC
+        LIMIT 10
+      `;
+    } else {
+      posts = await sql`
+        SELECT
+          posts.id,
+          posts.category_id,
+          posts.title,
+          posts.type,
+          posts.excerpt,
+          posts.content,
+          posts.cover_image,
+          posts.published_at,
+          posts.likes,
+          posts.views,
+          (
+            SELECT COUNT(*)::int
+            FROM comments c
+            WHERE c.post_id = posts.id
+          ) AS comments_count
+        FROM posts
+        ORDER BY posts.published_at DESC
+        LIMIT 10
+      `;
+    }
 
     return {
       data: posts.map(mapPostDates) as unknown as IPost[],
@@ -80,12 +186,17 @@ export const getPostById = async (postId: string): Promise<IPost> => {
 
   try {
     const posts = await sql`
-      SELECT * 
-      FROM posts 
-      WHERE id = ${postId}
+      SELECT
+        posts.*,
+        (
+          SELECT COUNT(*)::int
+          FROM comments c
+          WHERE c.post_id = posts.id
+        ) AS comments_count
+      FROM posts
+      WHERE posts.id = ${postId}
       LIMIT 1
     `;
-
     if (!posts.length) {
       throw new Error("Post not found");
     }
@@ -114,7 +225,10 @@ export const getPostById = async (postId: string): Promise<IPost> => {
 export const getCategories = async (): Promise<ICategories | null> => {
   try {
     const categories = await sql`
-      SELECT c.id, c.name, COUNT(p.id)::int as count_posts
+      SELECT 
+        c.id, 
+        c.name AS title, 
+        COUNT(p.id)::int AS posts_count
       FROM categories c
       LEFT JOIN posts p ON p.category_id = c.id
       GROUP BY c.id, c.name
@@ -176,13 +290,42 @@ export const getPostsCalendar = async (): Promise<IPostCalendar[]> => {
 };
 
 // 5. Комментарии
-export const getComments = async (id: string) => {
-  try {
+export async function getComments(postId: string): Promise<IComment[]> {
+  const numericPostId = Number(postId);
+
+  if (Number.isNaN(numericPostId)) {
     return [];
-  } catch (error) {
-    console.error(error);
   }
-};
+
+  try {
+    const rawComments = await sql`
+      SELECT id, post_id, parent_id, name, email, comment, logo, created_at
+      FROM comments
+      WHERE post_id = ${numericPostId}
+      ORDER BY created_at ASC
+    `;
+
+    const map = new Map<number, IComment>();
+    const roots: IComment[] = [];
+
+    rawComments.forEach((item: any) => {
+      map.set(item.id, { ...item, comments: [] });
+    });
+
+    rawComments.forEach((item: any) => {
+      if (item.parent_id && map.has(item.parent_id)) {
+        map.get(item.parent_id)!.comments?.push(map.get(item.id)!);
+      } else {
+        roots.push(map.get(item.id)!);
+      }
+    });
+
+    return roots;
+  } catch (error) {
+    console.error("Failed to fetch comments:", error);
+    return [];
+  }
+}
 
 // 6. Контакты
 export const getContactItems =
@@ -272,5 +415,38 @@ export const disLikePost = async (id: number): Promise<boolean> => {
   } catch (error) {
     console.error(error);
     return false;
+  }
+};
+
+export const getPopularPosts = async (): Promise<IPost[]> => {
+  try {
+    const posts = await sql`
+      SELECT
+        posts.id,
+        posts.category_id,
+        posts.title,
+        posts.type,
+        posts.excerpt,
+        posts.content,
+        posts.cover_image,
+        posts.published_at,
+        posts.likes,
+        posts.views,
+        (
+          SELECT COUNT(*)::int
+          FROM comments c
+          WHERE c.post_id = posts.id
+        ) AS comments_count
+      FROM posts
+      ORDER BY
+        COALESCE(posts.likes, 0) DESC,
+        COALESCE(posts.views, 0) DESC
+      LIMIT 3
+    `;
+
+    return posts.map(mapPostDates) as IPost[];
+  } catch (error) {
+    console.error("Error fetching popular posts:", error);
+    return [];
   }
 };

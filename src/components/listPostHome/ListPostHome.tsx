@@ -123,7 +123,7 @@ const ListPostHome = ({
                         color="#6c757d"
                         className="mr-[10px]"
                       />
-                      <CommentsCount count={post.comments_count || 0} />
+                      <CommentsCount count={post.comments_count ?? 0} />
                     </div>
                     <span className="flex items-center">
                       <Heart
@@ -137,7 +137,7 @@ const ListPostHome = ({
                   <p
                     className="mb-6 line-clamp-2 xs:mb-0"
                     dangerouslySetInnerHTML={{
-                      __html: post.description,
+                      __html: post.description ?? "",
                     }}
                   ></p>
                   <Link

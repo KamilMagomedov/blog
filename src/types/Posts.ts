@@ -12,13 +12,13 @@ export interface IPost {
   content?: string;
   excerpt?: string;
   cover_image?: string;
+  image?: string;
   images?: string[];
   likes?: number;
   views?: number;
+  comments_count: number;
   published_at?: string;
-  author?: {
-    name: string;
-  };
+  author: IAuthor;
   category?: {
     title: string;
   };
@@ -34,7 +34,8 @@ export interface ICategory {
 
 export interface IAuthor {
   name: string;
-  image: string;
+  image?: string;
+  avatar?: string;
 }
 
 export interface IPaginator {

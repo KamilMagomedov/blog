@@ -9,7 +9,20 @@ import React from "react";
 interface ITopThreePopular {
   topThreePopular: IPost[];
 }
+
 const PopularArticles: React.FC<ITopThreePopular> = ({ topThreePopular }) => {
+  const popularPosts = [...topThreePopular]
+    .sort((a, b) => {
+      const likesDifference = (b.likes ?? 0) - (a.likes ?? 0);
+
+      if (likesDifference !== 0) {
+        return likesDifference;
+      }
+
+      return (b.views ?? 0) - (a.views ?? 0);
+    })
+    .slice(0, 3);
+
   return (
     <div className="mb-[40px]">
       <div className="mx-auto xs:w-[270px] md:w-[400px] 2xl:w-[270px]">
@@ -19,23 +32,26 @@ const PopularArticles: React.FC<ITopThreePopular> = ({ topThreePopular }) => {
           Popular Articles
         </h3>
         <div className="flex">
-          <ul>
-            {topThreePopular.map((popular) => (
+          <ul className="w-full">
+            {popularPosts.map((popular) => (
               <li key={popular.id} className="mb-6 flex">
                 <Link
                   href={`/post/${popular.id}`}
-                  className={`relative mr-5 h-[80px] w-[80px] flex-shrink-0 flex-grow-0 basis-[80px]`}
+                  className="relative mr-5 h-[80px] w-[80px] flex-shrink-0 flex-grow-0 basis-[80px]"
                 >
                   <Image
-                    src={getPostImage(popular.image)}
-                    alt="image"
+                    src={getPostImage(
+                      popular.image || popular.cover_image || "",
+                    )}
+                    alt={popular.title}
                     fill
                     sizes="80px"
                     className="rounded-[20px] object-cover"
                     priority
                   />
                 </Link>
-                <div className="[w-calc(100%-100px)] mb-6">
+
+                <div className="mb-6 min-w-0 flex-1">
                   <h3 className="mb-2 line-clamp-2 overflow-hidden text-ellipsis text-base text-[black]">
                     <Link href={`/post/${popular.id}`}>{popular.title}</Link>
                   </h3>
@@ -49,14 +65,14 @@ const PopularArticles: React.FC<ITopThreePopular> = ({ topThreePopular }) => {
                     <UserRound className="mr-1 h-3 w-3 flex-shrink-0 text-[#575557]" />
                     <span className="line-clamp-1 max-w-[158px] overflow-hidden text-ellipsis text-xs text-[#575557]">
                       <Link href="/about">
-                        {popular.author?.name ?? "Автор"}
+                        {popular.author?.name ?? "Kamil Mahomedov"}
                       </Link>
                     </span>
                   </div>
                   <div className="flex items-center">
                     <MessageSquareText className="mr-1 h-3 w-3 flex-shrink-0 text-[#575557]" />
                     <span className="text-xs text-[#575557]">
-                      {popular.comments_count}
+                      {popular.comments_count ?? 0}
                     </span>
                   </div>
                 </div>

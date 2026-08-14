@@ -35,7 +35,7 @@ const WidgetsPanel: React.FC<WidgetsPanelProps> = ({
   return (
     <div className="sidebar bg-[#f8f9fa] pt-12 text-[#212529] xs:w-full xs:max-w-[100%] 2xl:w-1/3 2xl:max-w-[33.333%] 2xl:flex-shrink-0 2xl:flex-grow-0">
       <SearchKeywords setIsLoadingCallback={setIsLoadingCallback} />
-      <Categories categories={categories.data.categories} />
+      <Categories categories={categories.data} />
       <PopularArticles topThreePopular={topThreePopular} />
       <TagCloud
         isLoading={isLoading}

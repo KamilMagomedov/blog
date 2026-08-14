@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState } from "react";
 import CommentsMassage from "../comments/CommentsMassage";
 import CommentsForm from "../comments/CommentsForm";
@@ -8,21 +9,27 @@ interface IPropsClientCommentsComponent {
   comments: IComment[];
   id: number | string;
 }
+
 const ClientCommentsComponent: React.FC<IPropsClientCommentsComponent> = ({
   comments,
   id,
 }) => {
-  const [commentReply, setCommentReply] = useState<null | undefined | number>();
+  const [commentReply, setCommentReply] = useState<number | null>(null);
+
   const [leaveCommentUnderComment, setLeaveCommentUnderComment] =
     useState<boolean>(false);
 
   return (
     <>
       <CommentsMassage
+        postId={id}
         comments={comments}
+        commentReply={commentReply}
         setCommentReply={setCommentReply}
+        leaveCommentUnderComment={leaveCommentUnderComment}
         setLeaveCommentUnderComment={setLeaveCommentUnderComment}
       />
+
       <CommentsForm
         id={id}
         commentReply={commentReply}

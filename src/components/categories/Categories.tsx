@@ -4,7 +4,10 @@ import { ICategory } from "@/types/Travel";
 interface ICategoriesProps {
   categories: ICategory[] | null;
 }
+
 const Categories: React.FC<ICategoriesProps> = ({ categories }) => {
+  if (!categories || categories.length === 0) return null;
+
   return (
     <div className="mb-[40px]">
       <div className="mx-auto xs:w-[270px] md:w-[400px] 2xl:w-[270px]">
@@ -14,7 +17,7 @@ const Categories: React.FC<ICategoriesProps> = ({ categories }) => {
           Categories
         </h3>
         <ul>
-          {categories?.map((category) => (
+          {categories.map((category) => (
             <li
               key={category.id}
               className="relative mb-[10px] border-b-[1px] border-[#dee2e6] pb-[10px]"
@@ -22,7 +25,7 @@ const Categories: React.FC<ICategoriesProps> = ({ categories }) => {
               <p className="text-[black]">
                 {category.title}
                 <span className="absolute right-0 top-0 font-black text-[#575557]">
-                  ({category.posts_count})
+                  ({category.posts_count ?? 0})
                 </span>
               </p>
             </li>

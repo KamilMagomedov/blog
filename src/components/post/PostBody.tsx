@@ -44,7 +44,15 @@ const PostBody: React.FC<IPostBodyProps> = ({ post }) => {
     return <PostSkeleton />;
   }
 
-  const articleContent = post.content || post.description || post.excerpt || "";
+  const articleContent = (
+    post.content ||
+    post.description ||
+    post.excerpt ||
+    ""
+  )
+    .replace(/!\[[\s\S]*?\]\([\s\S]*?\)/g, "")
+    .replace(/  +/g, " ")
+    .trim();
 
   return (
     <>

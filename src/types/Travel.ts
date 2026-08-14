@@ -1,5 +1,5 @@
 export interface ICategories {
-  data: ICategoryForm;
+  data: ICategory[];
   success: boolean;
 }
 

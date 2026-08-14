@@ -3,8 +3,10 @@ import { useModal } from "@/contexts/ModalContext";
 import { IComment } from "@/types/Posts";
 import { useRef, useState } from "react";
 import { X } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 interface ICommentsForm {
   name: string;
   email: string;
@@ -15,19 +17,22 @@ interface ICommentsForm {
 
 interface ICommentsFormProps {
   id: number | string;
-  commentReply: null | undefined | number;
-  comments: IComment[];
-  leaveCommentUnderComment: boolean;
+  commentReply?: null | number;
+  setCommentReply?: (id: number | null) => void;
+  comments?: IComment[];
+  leaveCommentUnderComment?: boolean;
   setLeaveCommentUnderComment: (param: boolean) => void;
 }
 
 const CommentsForm: React.FC<ICommentsFormProps> = ({
   id,
   commentReply,
-  comments,
+  setCommentReply,
+  comments = [],
   leaveCommentUnderComment,
   setLeaveCommentUnderComment,
 }) => {
+  const router = useRouter();
   const [formData, setFormData] = useState<ICommentsForm>({
     name: "",
     email: "",
@@ -53,6 +58,12 @@ const CommentsForm: React.FC<ICommentsFormProps> = ({
     if (file) {
       setFormData((prev) => ({ ...prev, logo: file }));
     }
+  };
+
+  const handleCancelReply = () => {
+    setLeaveCommentUnderComment(false);
+    if (setCommentReply) setCommentReply(null);
+    setFormData((prev) => ({ ...prev, parent_id: undefined }));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -82,9 +93,7 @@ const CommentsForm: React.FC<ICommentsFormProps> = ({
         throw new Error(errorData.message || "Failed to send message");
       }
 
-      setSuccessMessage(
-        "Thank you for reaching out! I'll get back to you soon.",
-      );
+      setSuccessMessage("Thank you for reaching out!");
       setFormData({
         name: "",
         email: "",
@@ -96,11 +105,14 @@ const CommentsForm: React.FC<ICommentsFormProps> = ({
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
+
       setLeaveCommentUnderComment(false);
+      if (setCommentReply) setCommentReply(null);
+
       openModal();
+      router.refresh();
     } catch (error) {
       console.error("Error sending message:", error);
-      setSuccessMessage(null);
     } finally {
       setIsSubmitting(false);
     }
@@ -108,32 +120,31 @@ const CommentsForm: React.FC<ICommentsFormProps> = ({
 
   return (
     <>
-      {leaveCommentUnderComment && commentReply !== null && (
-        <div className="relative mb-4 rounded-lg border border-gray-300 bg-gray-100 p-3 text-sm text-gray-700">
-          <p>
-            <strong>Replying to:</strong>{" "}
-            {comments.find((c) => c.id === commentReply)?.comment}
-          </p>
-          <button
-            onClick={() => {
-              setLeaveCommentUnderComment(false);
-              setFormData((prev) => ({ ...prev, parent_id: undefined }));
-            }}
-            className="absolute right-2 top-2 text-gray-500 hover:text-gray-700"
-          >
-            <X size={24} />
-          </button>
-          <button
-            onClick={() => {
-              setLeaveCommentUnderComment(false);
-              setFormData((prev) => ({ ...prev, parent_id: undefined }));
-            }}
-            className="mt-2 rounded bg-red-500 px-3 py-1 text-white hover:bg-red-600"
-          >
-            Cancel reply
-          </button>
-        </div>
-      )}
+      {leaveCommentUnderComment &&
+        commentReply !== null &&
+        commentReply !== undefined && (
+          <div className="relative mb-4 rounded-lg border border-gray-300 bg-gray-100 p-3 text-sm text-gray-700">
+            <p>
+              <strong>Replying to:</strong>{" "}
+              {comments.find((c) => c.id === commentReply)?.comment ||
+                `Comment #${commentReply}`}
+            </p>
+            <button
+              type="button"
+              onClick={handleCancelReply}
+              className="absolute right-2 top-2 text-gray-500 hover:text-gray-700"
+            >
+              <X size={24} />
+            </button>
+            <button
+              type="button"
+              onClick={handleCancelReply}
+              className="mt-2 rounded bg-red-500 px-3 py-1 text-white hover:bg-red-600"
+            >
+              Cancel reply
+            </button>
+          </div>
+        )}
       <form
         onSubmit={handleSubmit}
         ref={formElem}
@@ -146,7 +157,7 @@ const CommentsForm: React.FC<ICommentsFormProps> = ({
           onChange={handleChange}
           placeholder="Your Name"
           required
-          className="mb-4 w-full rounded border-gray-300 p-2"
+          className="mb-4 w-full rounded border border-gray-300 p-2 text-black"
         />
 
         <input
@@ -156,7 +167,7 @@ const CommentsForm: React.FC<ICommentsFormProps> = ({
           onChange={handleChange}
           placeholder="Your Email"
           required
-          className="mb-4 w-full rounded border-gray-300 p-2"
+          className="mb-4 w-full rounded border border-gray-300 p-2 text-black"
         />
 
         <input
@@ -165,7 +176,7 @@ const CommentsForm: React.FC<ICommentsFormProps> = ({
           name="logo"
           accept="image/*"
           onChange={handleFileUpload}
-          className="mb-4 w-full rounded border-gray-300 p-2"
+          className="mb-4 w-full rounded border border-gray-300 p-2 text-black"
         />
 
         <textarea
@@ -175,7 +186,7 @@ const CommentsForm: React.FC<ICommentsFormProps> = ({
           placeholder="Comment"
           required
           rows={4}
-          className="mb-4 w-full rounded border-gray-300 p-2 text-black"
+          className="mb-4 w-full rounded border border-gray-300 p-2 text-black"
         ></textarea>
 
         <button
