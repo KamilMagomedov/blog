@@ -134,12 +134,9 @@ const ListPostHome = ({
                       {post.likes}
                     </span>
                   </div>
-                  <p
-                    className="mb-6 line-clamp-2 xs:mb-0"
-                    dangerouslySetInnerHTML={{
-                      __html: post.description ?? "",
-                    }}
-                  ></p>
+                  <p className="mb-6 line-clamp-2 xs:mb-0">
+                    {post.excerpt ?? ""}
+                  </p>
                   <Link
                     href={`/post/${post.id}`}
                     className="relative mr-4 max-w-[165px] text-[#1eafed]"

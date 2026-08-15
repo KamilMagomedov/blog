@@ -1,19 +1,24 @@
 "use client";
 
 import { IPaginator } from "@/types/Posts";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 interface PaginationProps {
   paginator: IPaginator;
-  type?: string;
 }
 
-export const Pagination: React.FC<PaginationProps> = ({ paginator, type }) => {
+export const Pagination: React.FC<PaginationProps> = ({ paginator }) => {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { current_page, last_page } = paginator;
 
   const goToPage = (page: number) => {
-    router.push(`/${type}?page=${page}`);
+    const params = new URLSearchParams(searchParams?.toString() ?? "");
+
+    params.set("page", String(page));
+
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   function range(start: number, end: number): number[] {

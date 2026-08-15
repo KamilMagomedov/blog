@@ -2,6 +2,7 @@ import HomeClient from "@/components/homeClient/HomeClient";
 import {
   fetchPosts,
   getCategories,
+  getPopularPosts,
   getPostsCalendar,
   getTags,
 } from "@/lib/api";
@@ -36,12 +37,7 @@ const Home: React.FC<PageProps> = async ({ searchParams }) => {
   const postsCalendar = await getPostsCalendar();
   const postsTags = await getTags();
 
-  const mostPopularPostQueryBuilder: IGetPostQueryBuilder =
-    getPostQueryBuilder().setLimit(3).setOrder("likes").setDir("desc");
-
-  const { data: topThreePopular } = await fetchPosts(
-    mostPopularPostQueryBuilder,
-  );
+  const topThreePopular = await getPopularPosts();
 
   return (
     <HomeClient

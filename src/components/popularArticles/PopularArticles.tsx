@@ -11,18 +11,6 @@ interface ITopThreePopular {
 }
 
 const PopularArticles: React.FC<ITopThreePopular> = ({ topThreePopular }) => {
-  const popularPosts = [...topThreePopular]
-    .sort((a, b) => {
-      const likesDifference = (b.likes ?? 0) - (a.likes ?? 0);
-
-      if (likesDifference !== 0) {
-        return likesDifference;
-      }
-
-      return (b.views ?? 0) - (a.views ?? 0);
-    })
-    .slice(0, 3);
-
   return (
     <div className="mb-[40px]">
       <div className="mx-auto xs:w-[270px] md:w-[400px] 2xl:w-[270px]">
@@ -33,7 +21,7 @@ const PopularArticles: React.FC<ITopThreePopular> = ({ topThreePopular }) => {
         </h3>
         <div className="flex">
           <ul className="w-full">
-            {popularPosts.map((popular) => (
+            {topThreePopular.map((popular) => (
               <li key={popular.id} className="mb-6 flex">
                 <Link
                   href={`/post/${popular.id}`}

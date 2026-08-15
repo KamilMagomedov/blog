@@ -44,137 +44,240 @@ const mapPostDates = (post: any) => {
 };
 
 export const fetchPosts = async (postQueryBuilder: IGetPostQueryBuilder) => {
+  let page = 1;
+  let limit = 10;
+
   try {
     const queryString = postQueryBuilder?.build ? postQueryBuilder.build() : "";
+
     const searchParams = new URLSearchParams(queryString);
 
-    const type = searchParams.get("type");
-    const search = searchParams.get("search");
+    const type = searchParams.get("type") || null;
+    const search = searchParams.get("search")?.trim() || null;
+    const archive = searchParams.get("archive") || null;
+    const category = searchParams.get("category") || null;
+    const tag = searchParams.get("tags")?.trim() || null;
+
+    const limitParam = Number(searchParams.get("limit"));
+    const pageParam = Number(searchParams.get("page"));
+
+    limit =
+      Number.isFinite(limitParam) && limitParam > 0
+        ? Math.min(limitParam, 100)
+        : 10;
+
+    page = Number.isFinite(pageParam) && pageParam > 0 ? pageParam : 1;
+
+    const offset = (page - 1) * limit;
 
     const searchPattern = search ? `%${search}%` : null;
 
-    let posts = [];
+    const orderParam = searchParams.get("order");
+    const dirParam = searchParams.get("dir");
 
-    if (searchPattern && type) {
-      posts = await sql`
-        SELECT
-          posts.id,
-          posts.category_id,
-          posts.title,
-          posts.type,
-          posts.excerpt,
-          posts.content,
-          posts.cover_image,
-          posts.published_at,
-          posts.likes,
-          posts.views,
-          (
-            SELECT COUNT(*)::int
-            FROM comments c
-            WHERE c.post_id = posts.id
-          ) AS comments_count
-        FROM posts
-        WHERE posts.type = ${type}
-          AND (
-            posts.title ILIKE ${searchPattern}
-            OR posts.content ILIKE ${searchPattern}
-          )
-        ORDER BY posts.published_at DESC
-        LIMIT 10
-      `;
-    } else if (searchPattern) {
-      posts = await sql`
-        SELECT
-          posts.id,
-          posts.category_id,
-          posts.title,
-          posts.type,
-          posts.excerpt,
-          posts.content,
-          posts.cover_image,
-          posts.published_at,
-          posts.likes,
-          posts.views,
-          (
-            SELECT COUNT(*)::int
-            FROM comments c
-            WHERE c.post_id = posts.id
-          ) AS comments_count
-        FROM posts
-        WHERE posts.title ILIKE ${searchPattern}
+    const order =
+      orderParam === "likes" ||
+      orderParam === "views" ||
+      orderParam === "published_at"
+        ? orderParam
+        : "published_at";
+
+    const dir = dirParam === "asc" ? "asc" : "desc";
+
+    const sortLikesAsc = order === "likes" && dir === "asc";
+    const sortLikesDesc = order === "likes" && dir === "desc";
+
+    const sortViewsAsc = order === "views" && dir === "asc";
+    const sortViewsDesc = order === "views" && dir === "desc";
+
+    const sortDateAsc = order === "published_at" && dir === "asc";
+    const sortDateDesc = order === "published_at" && dir === "desc";
+
+    const posts = await sql`
+      SELECT
+        posts.id,
+        posts.category_id,
+        posts.title,
+        posts.type,
+        posts.excerpt,
+        posts.content,
+        posts.cover_image,
+        posts.published_at,
+        posts.likes,
+        posts.views,
+
+        (
+          SELECT COUNT(*)::int
+          FROM comments c
+          WHERE c.post_id = posts.id
+        ) AS comments_count
+
+      FROM posts
+
+      WHERE
+        (
+          ${type}::text IS NULL
+          OR posts.type = ${type}
+        )
+
+        AND (
+          ${searchPattern}::text IS NULL
+          OR posts.title ILIKE ${searchPattern}
           OR posts.content ILIKE ${searchPattern}
-        ORDER BY posts.published_at DESC
-        LIMIT 10
-      `;
-    } else if (type) {
-      posts = await sql`
-        SELECT
-          posts.id,
-          posts.category_id,
-          posts.title,
-          posts.type,
-          posts.excerpt,
-          posts.content,
-          posts.cover_image,
-          posts.published_at,
-          posts.likes,
-          posts.views,
-          (
-            SELECT COUNT(*)::int
-            FROM comments c
-            WHERE c.post_id = posts.id
-          ) AS comments_count
-        FROM posts
-        WHERE posts.type = ${type}
-        ORDER BY posts.published_at DESC
-        LIMIT 10
-      `;
-    } else {
-      posts = await sql`
-        SELECT
-          posts.id,
-          posts.category_id,
-          posts.title,
-          posts.type,
-          posts.excerpt,
-          posts.content,
-          posts.cover_image,
-          posts.published_at,
-          posts.likes,
-          posts.views,
-          (
-            SELECT COUNT(*)::int
-            FROM comments c
-            WHERE c.post_id = posts.id
-          ) AS comments_count
-        FROM posts
-        ORDER BY posts.published_at DESC
-        LIMIT 10
-      `;
-    }
+          OR posts.excerpt ILIKE ${searchPattern}
+        )
+
+        AND (
+          ${archive}::text IS NULL
+          OR TO_CHAR(posts.published_at, 'YYYY-MM') = ${archive}
+        )
+
+        AND (
+          ${category}::text IS NULL
+          OR EXISTS (
+            SELECT 1
+            FROM categories cat
+            WHERE cat.id = posts.category_id
+              AND (
+                cat.id::text = ${category}
+                OR LOWER(cat.name) = LOWER(${category})
+              )
+          )
+        )
+
+        AND (
+          ${tag}::text IS NULL
+          OR EXISTS (
+            SELECT 1
+            FROM post_tags pt
+            JOIN tags t ON t.id = pt.tag_id
+            WHERE pt.post_id = posts.id
+              AND (
+                LOWER(t.slug) = LOWER(${tag})
+                OR LOWER(t.name) = LOWER(${tag})
+              )
+          )
+        )
+
+      ORDER BY
+        CASE
+          WHEN ${sortLikesAsc}
+          THEN COALESCE(posts.likes, 0)
+        END ASC,
+
+        CASE
+          WHEN ${sortLikesDesc}
+          THEN COALESCE(posts.likes, 0)
+        END DESC,
+
+        CASE
+          WHEN ${sortViewsAsc}
+          THEN COALESCE(posts.views, 0)
+        END ASC,
+
+        CASE
+          WHEN ${sortViewsDesc}
+          THEN COALESCE(posts.views, 0)
+        END DESC,
+
+        CASE
+          WHEN ${sortDateAsc}
+          THEN posts.published_at
+        END ASC,
+
+        CASE
+          WHEN ${sortDateDesc}
+          THEN posts.published_at
+        END DESC,
+
+        posts.id DESC
+
+      LIMIT ${limit}
+      OFFSET ${offset}
+    `;
+
+    const countResult = await sql`
+      SELECT COUNT(*)::int AS total
+
+      FROM posts
+
+      WHERE
+        (
+          ${type}::text IS NULL
+          OR posts.type = ${type}
+        )
+
+        AND (
+          ${searchPattern}::text IS NULL
+          OR posts.title ILIKE ${searchPattern}
+          OR posts.content ILIKE ${searchPattern}
+          OR posts.excerpt ILIKE ${searchPattern}
+        )
+
+        AND (
+          ${archive}::text IS NULL
+          OR TO_CHAR(posts.published_at, 'YYYY-MM') = ${archive}
+        )
+
+        AND (
+          ${category}::text IS NULL
+          OR EXISTS (
+            SELECT 1
+            FROM categories cat
+            WHERE cat.id = posts.category_id
+              AND (
+                cat.id::text = ${category}
+                OR LOWER(cat.name) = LOWER(${category})
+              )
+          )
+        )
+
+        AND (
+          ${tag}::text IS NULL
+          OR EXISTS (
+            SELECT 1
+            FROM post_tags pt
+            JOIN tags t ON t.id = pt.tag_id
+            WHERE pt.post_id = posts.id
+              AND (
+                LOWER(t.slug) = LOWER(${tag})
+                OR LOWER(t.name) = LOWER(${tag})
+              )
+          )
+        )
+    `;
+
+    const total = Number(countResult[0]?.total ?? 0);
+
+    const lastPage = Math.max(1, Math.ceil(total / limit));
 
     return {
       data: posts.map(mapPostDates) as unknown as IPost[],
+
       paginator: {
-        current_page: 1,
-        per_page: 10,
-        last_page: 1,
-        total: posts.length,
-        has_more: false,
+        current_page: page,
+        per_page: limit,
+        last_page: lastPage,
+        total,
+        has_more: page < lastPage,
       } as IPaginator,
+
       success: true,
     };
   } catch (error) {
     console.error("Error fetching posts:", error);
+
     return {
       data: [] as IPost[],
+
       paginator: {
-        current_page: 1,
-        per_page: 10,
+        current_page: page,
+        per_page: limit,
         last_page: 1,
         total: 0,
         has_more: false,
       } as IPaginator,
+
       success: false,
     };
   }
@@ -197,6 +300,7 @@ export const getPostById = async (postId: string): Promise<IPost> => {
       WHERE posts.id = ${postId}
       LIMIT 1
     `;
+
     if (!posts.length) {
       throw new Error("Post not found");
     }
@@ -376,25 +480,18 @@ export const getTags = async (param: string | null = null): Promise<ITag[]> => {
       ? await sql`
           SELECT id, name, slug 
           FROM tags 
-          WHERE slug = ${param} OR name ILIKE ${"%" + param + "%"}
+          WHERE slug = ${param}
+             OR name ILIKE ${"%" + param + "%"}
         `
-      : await sql`SELECT id, name, slug FROM tags`;
+      : await sql`
+          SELECT id, name, slug
+          FROM tags
+        `;
 
     return tags as unknown as ITag[];
-  } catch {
-    const defaultTags = [
-      { id: 1, name: "Travel", slug: "travel" },
-      { id: 2, name: "Development", slug: "development" },
-      { id: 3, name: "Next.js", slug: "nextjs" },
-    ];
-
-    if (!param) return defaultTags as unknown as ITag[];
-
-    return defaultTags.filter(
-      (tag) =>
-        tag.slug.toLowerCase() === param.toLowerCase() ||
-        tag.name.toLowerCase().includes(param.toLowerCase()),
-    ) as unknown as ITag[];
+  } catch (error) {
+    console.error("Error fetching tags:", error);
+    return [];
   }
 };
 

@@ -55,7 +55,7 @@ const HomeClient: React.FC<IHomeClientProps> = ({
               isLoading={isLoading}
               setIsLoadingCallback={setIsLoadingCallback}
             />
-            <Pagination paginator={paginator} type="/" />
+            <Pagination paginator={paginator} />
           </div>
           <WidgetsPanel
             categories={categories}

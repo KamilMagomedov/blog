@@ -40,7 +40,7 @@ const DevelopmentPage = async ({ searchParams }: PageProps) => {
       <div className="container mx-auto px-[15px] sm:w-[540px] md:w-[720px] lg:w-[960px] lg:max-w-full xl:w-[1140px]">
         <ListPostDevelopment data={data} />
       </div>
-      <Pagination paginator={paginator} type="development" />
+      <Pagination paginator={paginator} />
     </section>
   );
 };
