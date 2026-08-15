@@ -4,7 +4,7 @@ const DevelopmentSkeleton: React.FC = () => {
       {Array.from({ length: 10 }).map((_, i) => (
         <li
           key={i}
-          className="mb-12 flex w-full items-center xs:mb-8 xs:flex-col lg:max-w-[90%] lg:flex-row"
+          className="group mb-12 flex w-full items-center transition-all duration-300 ease-out hover:-translate-y-1 xs:mb-8 xs:flex-col lg:max-w-[90%] lg:flex-row"
         >
           <div className="relative h-[150px] w-[150px] overflow-hidden rounded-[20px] bg-gray-300 xs:mb-4 xs:mr-0 lg:mb-0 lg:mr-4"></div>
           <div className="w-[70%]">

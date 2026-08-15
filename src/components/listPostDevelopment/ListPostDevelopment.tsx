@@ -99,7 +99,12 @@ const ListPostDevelopment: React.FC<IListPostDevelopmentProps> = React.memo(
               <h3
                 className={`mb-6 font-normal leading-6 text-gray-900 xs:text-center xs:text-[1.3rem] lg:text-left lg:text-3xl ${lora.className}`}
               >
-                <Link href={`/post/${post.id}`}>{post.title}</Link>
+                <Link
+                  href={`/post/${post.id}`}
+                  className="transition-colors duration-300 hover:text-[#1eafed]"
+                >
+                  {post.title}
+                </Link>
               </h3>
               <div className="flex xs:flex-col">
                 <div className="block_data_comments flex items-center xs:mb-0 xs:flex-col md:mx-auto md:my-0 md:flex-row lg:mx-0 lg:mb-6">

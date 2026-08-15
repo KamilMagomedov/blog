@@ -28,37 +28,44 @@ const ListPostHome = ({
 
   const postRefs = useRef<(HTMLLIElement | undefined | null)[]>([]);
 
-  const [visiblePosts, setVisiblePosts] = useState<{ [key: number]: boolean }>(
-    () => {
-      const initial: { [key: number]: boolean } = {};
-      for (let i = 0; i < 5; i++) initial[i] = true;
-      return initial;
-    },
-  );
+  const [visiblePosts, setVisiblePosts] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
+    if (isLoading) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const index = postRefs.current.findIndex(
-              (ref) => ref === entry.target,
-            );
-            if (index !== -1) {
-              setVisiblePosts((prev) => ({ ...prev, [index]: true }));
-            }
-          }
+          if (!entry.isIntersecting) return;
+
+          const index = postRefs.current.findIndex(
+            (ref) => ref === entry.target,
+          );
+
+          if (index === -1) return;
+
+          setVisiblePosts((prev) => ({
+            ...prev,
+            [index]: true,
+          }));
+
+          observer.unobserve(entry.target);
         });
       },
-      { rootMargin: "30px", threshold: 0.1 },
+      {
+        rootMargin: "30px",
+        threshold: 0.1,
+      },
     );
 
     postRefs.current.forEach((post) => {
-      if (post) observer.observe(post);
+      if (post) {
+        observer.observe(post);
+      }
     });
 
     return () => observer.disconnect();
-  }, [data]);
+  }, [data, isLoading]);
 
   if (isLoading) {
     return <DevelopmentSkeleton />;
@@ -81,7 +88,7 @@ const ListPostHome = ({
                   : "translateY(20px)",
                 transition: `opacity 0.5s ease-out, transform 0.5s ease-out ${index * 0.05}s`,
               }}
-              className="mb-12 flex w-full items-center xs:mb-8 xs:flex-col lg:max-w-[90%] lg:flex-row"
+              className="group mb-12 flex w-full items-center transition-all duration-300 ease-out hover:-translate-y-1 xs:mb-8 xs:flex-col lg:max-w-[90%] lg:flex-row"
             >
               <div className="relative block min-w-[150px] overflow-hidden rounded-[20px] xs:mb-4 xs:mr-0 lg:mb-0 lg:mr-4">
                 <Link
@@ -90,11 +97,10 @@ const ListPostHome = ({
                 >
                   <Image
                     src={getPostImage(post.image)}
-                    alt="My photo"
+                    alt={post.title}
                     width={150}
                     height={150}
-                    className="h-full object-cover object-center"
-                    priority={true}
+                    className="h-full object-cover object-center transition-transform duration-500 ease-out group-hover:scale-105"
                   />
                 </Link>
               </div>
@@ -102,6 +108,12 @@ const ListPostHome = ({
                 <h3
                   className={`mb-6 font-normal leading-6 text-gray-900 xs:text-center xs:text-[1.3rem] lg:text-left lg:text-3xl ${lora.className}`}
                 >
+                  <Link
+                    href={`/post/${post.id}`}
+                    className="transition-colors duration-300 hover:text-[#1eafed]"
+                  >
+                    {post.title}
+                  </Link>
                   <Link href={`/post/${post.id}`}>{post.title}</Link>
                 </h3>
                 <div className="flex xs:flex-col">
