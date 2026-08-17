@@ -5,14 +5,11 @@ import { useRef, useState } from "react";
 import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
 interface ICommentsForm {
   name: string;
   email: string;
   comment: string;
-  logo?: File | undefined;
-  parent_id?: null | number | undefined;
+  logo?: File;
 }
 
 interface ICommentsFormProps {
@@ -38,13 +35,11 @@ const CommentsForm: React.FC<ICommentsFormProps> = ({
     email: "",
     comment: "",
     logo: undefined,
-    parent_id: commentReply,
   });
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { openModal } = useModal();
-  const formElem = useRef<HTMLFormElement | null>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -63,13 +58,12 @@ const CommentsForm: React.FC<ICommentsFormProps> = ({
   const handleCancelReply = () => {
     setLeaveCommentUnderComment(false);
     if (setCommentReply) setCommentReply(null);
-    setFormData((prev) => ({ ...prev, parent_id: undefined }));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setSuccessMessage(null);
+    setErrorMessage(null);
 
     const formDataToSend = new FormData();
     formDataToSend.append("name", formData.name);
@@ -83,7 +77,7 @@ const CommentsForm: React.FC<ICommentsFormProps> = ({
     }
 
     try {
-      const response = await fetch(`${API_URL}/v1/blog/posts/${id}/comments`, {
+      const response = await fetch(`/api/v1/blog/posts/${id}/comments`, {
         method: "POST",
         body: formDataToSend,
       });
@@ -93,13 +87,11 @@ const CommentsForm: React.FC<ICommentsFormProps> = ({
         throw new Error(errorData.message || "Failed to send message");
       }
 
-      setSuccessMessage("Thank you for reaching out!");
       setFormData({
         name: "",
         email: "",
         comment: "",
         logo: undefined,
-        parent_id: undefined,
       });
 
       if (fileInputRef.current) {
@@ -112,7 +104,13 @@ const CommentsForm: React.FC<ICommentsFormProps> = ({
       openModal();
       router.refresh();
     } catch (error) {
-      console.error("Error sending message:", error);
+      console.error("Error sending comment:", error);
+
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong. Please try again.",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -123,82 +121,139 @@ const CommentsForm: React.FC<ICommentsFormProps> = ({
       {leaveCommentUnderComment &&
         commentReply !== null &&
         commentReply !== undefined && (
-          <div className="relative mb-4 rounded-lg border border-gray-300 bg-gray-100 p-3 text-sm text-gray-700">
-            <p>
-              <strong>Replying to:</strong>{" "}
+          <div className="relative mb-5 rounded-lg border border-[#1eafed]/20 bg-sky-50 p-4 pr-12 text-sm text-gray-700">
+            <p className="font-medium text-gray-900">Replying to comment</p>
+
+            <p className="mt-1 line-clamp-2">
               {comments.find((c) => c.id === commentReply)?.comment ||
                 `Comment #${commentReply}`}
             </p>
+
             <button
               type="button"
               onClick={handleCancelReply}
-              className="absolute right-2 top-2 text-gray-500 hover:text-gray-700"
+              aria-label="Cancel reply"
+              className="absolute right-3 top-3 text-gray-400 transition-colors hover:text-gray-700"
             >
-              <X size={24} />
-            </button>
-            <button
-              type="button"
-              onClick={handleCancelReply}
-              className="mt-2 rounded bg-red-500 px-3 py-1 text-white hover:bg-red-600"
-            >
-              Cancel reply
+              <X size={20} />
             </button>
           </div>
         )}
       <form
         onSubmit={handleSubmit}
-        ref={formElem}
-        className="mx-auto max-w-3xl rounded bg-[#f8f9fa] xs:p-[10px] lg:p-12"
+        className="w-full rounded-xl bg-[#f8f9fa] p-5 md:p-8"
       >
-        <input
-          type="text"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          placeholder="Your Name"
-          required
-          className="mb-4 w-full rounded border border-gray-300 p-2 text-black"
-        />
+        <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div>
+            <label
+              htmlFor="comment-name"
+              className="mb-2 block text-sm font-medium text-gray-700"
+            >
+              Name
+            </label>
 
-        <input
-          type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          placeholder="Your Email"
-          required
-          className="mb-4 w-full rounded border border-gray-300 p-2 text-black"
-        />
+            <input
+              id="comment-name"
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Your name"
+              required
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-black outline-none transition-colors duration-200 focus:border-[#1eafed]"
+            />
+          </div>
 
-        <input
-          ref={fileInputRef}
-          type="file"
-          name="logo"
-          accept="image/*"
-          onChange={handleFileUpload}
-          className="mb-4 w-full rounded border border-gray-300 p-2 text-black"
-        />
+          <div>
+            <label
+              htmlFor="comment-email"
+              className="mb-2 block text-sm font-medium text-gray-700"
+            >
+              Email
+            </label>
 
-        <textarea
-          name="comment"
-          value={formData.comment}
-          onChange={handleChange}
-          placeholder="Comment"
-          required
-          rows={4}
-          className="mb-4 w-full rounded border border-gray-300 p-2 text-black"
-        ></textarea>
+            <input
+              id="comment-email"
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Your email"
+              required
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-black outline-none transition-colors duration-200 focus:border-[#1eafed]"
+            />
+          </div>
+        </div>
 
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="rounded-[30px] border-[1px] border-solid border-[#1eafed] bg-[#1eafed] px-12 py-4 text-white transition-colors duration-500 ease-in-out hover:bg-transparent hover:text-[#1eafed] xs:mx-auto xs:my-0 xs:block xs:w-[208px]"
-        >
-          {isSubmitting ? "Sending..." : "Send Message"}
-        </button>
-        {successMessage && (
-          <p className="mt-4 text-center text-sm text-green-600">
-            {successMessage}
+        <div className="mb-4">
+          <span className="mb-2 block text-sm font-medium text-gray-700">
+            Avatar
+            <span className="ml-1 font-normal text-gray-400">(optional)</span>
+          </span>
+
+          <input
+            ref={fileInputRef}
+            id={`comment-avatar-${commentReply ?? "main"}`}
+            type="file"
+            name="logo"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={handleFileUpload}
+            className="sr-only"
+          />
+
+          <label
+            htmlFor={`comment-avatar-${commentReply ?? "main"}`}
+            className="flex cursor-pointer items-center justify-between gap-4 rounded-lg border border-dashed border-gray-300 bg-white px-4 py-3 text-sm text-gray-600 transition-colors duration-200 hover:border-[#1eafed] hover:text-[#1eafed]"
+          >
+            <span className="truncate">
+              {formData.logo ? formData.logo.name : "Choose profile image"}
+            </span>
+
+            <span className="shrink-0 text-xs text-gray-400">
+              JPG, PNG, WEBP
+            </span>
+          </label>
+        </div>
+
+        <div className="mb-6">
+          <label
+            htmlFor={`comment-text-${commentReply ?? "main"}`}
+            className="mb-2 block text-sm font-medium text-gray-700"
+          >
+            Comment
+          </label>
+
+          <textarea
+            id={`comment-text-${commentReply ?? "main"}`}
+            name="comment"
+            value={formData.comment}
+            onChange={handleChange}
+            placeholder={
+              commentReply ? "Write your reply..." : "Share your thoughts..."
+            }
+            required
+            rows={5}
+            className="w-full resize-y rounded-lg border border-gray-300 bg-white px-4 py-3 text-black outline-none transition-colors duration-200 focus:border-[#1eafed]"
+          />
+        </div>
+
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="rounded-full border border-[#1eafed] bg-[#1eafed] px-8 py-3 font-medium text-white transition-all duration-300 hover:bg-transparent hover:text-[#1eafed] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isSubmitting
+              ? "Posting..."
+              : commentReply
+                ? "Post reply"
+                : "Post comment"}
+          </button>
+        </div>
+
+        {errorMessage && (
+          <p className="mt-4 text-center text-sm text-red-600">
+            {errorMessage}
           </p>
         )}
       </form>

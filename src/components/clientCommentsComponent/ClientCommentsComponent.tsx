@@ -20,7 +20,7 @@ const ClientCommentsComponent: React.FC<IPropsClientCommentsComponent> = ({
     useState<boolean>(false);
 
   return (
-    <>
+    <section className="mt-10 border-t border-gray-200 pt-10">
       <CommentsMassage
         postId={id}
         comments={comments}
@@ -30,14 +30,16 @@ const ClientCommentsComponent: React.FC<IPropsClientCommentsComponent> = ({
         setLeaveCommentUnderComment={setLeaveCommentUnderComment}
       />
 
-      <CommentsForm
-        id={id}
-        commentReply={commentReply}
-        comments={comments}
-        leaveCommentUnderComment={leaveCommentUnderComment}
-        setLeaveCommentUnderComment={setLeaveCommentUnderComment}
-      />
-    </>
+      <div className="mt-8">
+        <CommentsForm
+          id={id}
+          commentReply={commentReply}
+          comments={comments}
+          leaveCommentUnderComment={leaveCommentUnderComment}
+          setLeaveCommentUnderComment={setLeaveCommentUnderComment}
+        />
+      </div>
+    </section>
   );
 };
 

@@ -21,7 +21,7 @@ const Modal = () => {
           <X size={24} />
         </button>
         <h2 className="text-xl font-bold">
-          Thanks for your comment, it will be published after moderation
+          Thanks! Your comment has been published.
         </h2>
 
         <button
