@@ -9,7 +9,9 @@ const Aside: React.FC = () => {
   const year = new Date().getFullYear();
   return (
     <aside
-      className={`${isActive ? "xs:translate-x-0" : "xs:-translate-x-full"} fixed bottom-0 left-0 right-0 top-0 z-[51] flex h-full transform flex-col justify-between overflow-y-hidden border-r-[1px] border-solid border-r-[#e6e6e6] bg-white pb-10 pl-[2em] pr-[2em] pt-[5em] transition-transform duration-500 ease-in-out lg:flex lg:w-1/4 lg:translate-x-0`}
+      className={`${
+        isActive ? "translate-x-0" : "-translate-x-full"
+      } fixed inset-y-0 left-0 z-[51] flex h-dvh w-full transform flex-col justify-between overflow-y-auto border-r border-[#e6e6e6] bg-white px-8 py-16 transition-transform duration-500 ease-in-out lg:w-[260px] lg:translate-x-0 lg:px-6 lg:py-12`}
     >
       <NavBar />
       <div>
@@ -17,7 +19,7 @@ const Aside: React.FC = () => {
           <Link
             href="/"
             onClick={openBurgerMenu}
-            className={`${abrilFatface.className} bg-custom-text bg-cover bg-clip-text bg-bottom text-5xl font-normal leading-[0.8] text-transparent lg:text-4xl xl:text-5xl`}
+            className={`${abrilFatface.className} bg-custom-text bg-cover bg-clip-text bg-bottom text-4xl font-normal leading-[0.9] text-transparent`}
           >
             Mahomedov Kamil
           </Link>

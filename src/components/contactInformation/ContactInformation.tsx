@@ -59,42 +59,54 @@ const ContactInformation: React.FC<IContactProps> = ({
         Contact Information
       </h2>
 
-      <div className="flex gap-5 xs:flex-col lg:mb-10 lg:flex-row lg:flex-wrap lg:justify-between xl:flex-nowrap xl:justify-normal">
+      <div className="mb-10 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
         <InfoCard>
-          <Link
-            href={googleMapsUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group relative"
-          >
-            Address:{" "}
-            <span className="hover:text-[#1eafed]">
+          <div className="flex flex-col items-center gap-2">
+            <span className="font-medium">Address</span>
+
+            <Link
+              href={googleMapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group/tooltip relative transition-colors hover:text-[#1eafed]"
+            >
               {inform("Location")?.value || "N/A"}
-            </span>
-            <Tooltip>Click to open the map.</Tooltip>
-          </Link>
+
+              <Tooltip>Click to open the map.</Tooltip>
+            </Link>
+          </div>
         </InfoCard>
 
         <InfoCard>
-          <button onClick={copyToClipboard} className="group relative">
-            Phone:{" "}
-            <span className="hover:text-[#1eafed]">
+          <div className="flex flex-col items-center gap-2">
+            <span className="font-medium">Phone</span>
+
+            <button
+              onClick={copyToClipboard}
+              className="group/tooltip relative transition-colors hover:text-[#1eafed]"
+            >
               {inform("Phone")?.value || "N/A"}
-            </span>
-            <Tooltip>Click to copy phone number.</Tooltip>
-            {isCopied && <Tooltip>Copied!</Tooltip>}
-          </button>
+
+              <Tooltip>
+                {isCopied ? "Copied!" : "Click to copy phone number."}
+              </Tooltip>
+            </button>
+          </div>
         </InfoCard>
 
         <InfoCard>
-          Email:{" "}
-          <Link
-            href={`mailto:${inform("Email")?.value}`}
-            className="group relative break-words hover:text-[#1eafed]"
-          >
-            {inform("Email")?.value || "N/A"}
-            <Tooltip>Click to write a letter.</Tooltip>
-          </Link>
+          <div className="flex flex-col items-center gap-2">
+            <span className="font-medium">Email</span>
+
+            <Link
+              href={`mailto:${inform("Email")?.value}`}
+              className="group/tooltip relative break-all transition-colors hover:text-[#1eafed]"
+            >
+              {inform("Email")?.value || "N/A"}
+
+              <Tooltip>Click to write a letter.</Tooltip>
+            </Link>
+          </div>
         </InfoCard>
       </div>
     </>
@@ -102,13 +114,13 @@ const ContactInformation: React.FC<IContactProps> = ({
 };
 
 const InfoCard: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div className="mb-6 bg-[#f8f9fa] p-6 px-[15px] text-black xs:min-h-[70px] xs:w-full xs:text-center lg:min-h-[170px] lg:w-[45%] xl:w-1/3">
+  <div className="flex min-h-[150px] items-center justify-center rounded-lg bg-[#f8f9fa] p-6 text-center text-black">
     {children}
   </div>
 );
 
 const Tooltip: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div className="absolute bottom-full left-1/2 mb-2 w-max -translate-x-1/2 scale-0 rounded bg-gray-800 px-4 py-2 text-sm text-white shadow-lg transition-all group-hover:scale-100">
+  <div className="pointer-events-none invisible absolute bottom-full left-1/2 z-20 mb-2 w-max max-w-[220px] -translate-x-1/2 rounded bg-gray-800 px-3 py-2 text-center text-sm text-white opacity-0 shadow-lg transition-opacity duration-200 group-hover/tooltip:visible group-hover/tooltip:opacity-100">
     {children}
   </div>
 );

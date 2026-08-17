@@ -58,26 +58,29 @@ const PostBody: React.FC<IPostBodyProps> = ({ post }) => {
     <>
       <SliderPost post={post} />
 
-      <h1 className="mb-2 text-3xl font-bold text-gray-900 xs:text-center lg:text-left">
+      <h1 className="mb-4 text-3xl font-bold leading-tight text-gray-900 xs:text-center lg:text-left">
         {post.title}
       </h1>
-      <div className="flex items-center text-gray-600 xs:flex-col 2xl:mb-2 2xl:flex-row">
-        <p className="text-sm xs:mb-2 2xl:mb-0 2xl:mr-[5px]">
+
+      <div className="mb-5 flex flex-wrap items-center gap-x-3 gap-y-1 text-gray-600">
+        <p className="text-sm">
           <span className="font-black text-black">Author: </span>
           <span>{post.author?.name || "Unknown"}</span>
         </p>
-        <p className="text-sm xs:mb-2 2xl:mb-0 2xl:mr-[5px]">
-          <span className="font-black text-black">Category: </span>{" "}
+
+        <p className="text-sm">
+          <span className="font-black text-black">Category: </span>
           <span>{post.category?.title || "Uncategorized"}</span>
         </p>
-        <p className="text-sm xs:mb-2 2xl:mb-0 2xl:mr-[5px]">
-          <span className="font-black text-black">Published: </span>{" "}
+
+        <p className="text-sm">
+          <span className="font-black text-black">Published: </span>
           <span>{post.published_at}</span>
         </p>
       </div>
 
       <div
-        className="mb-6 break-words text-left text-gray-800 xs:text-[13px] md:text-lg [&_pre]:whitespace-pre-wrap"
+        className="mb-8 break-words text-left text-base leading-7 text-gray-700 md:text-lg md:leading-8 [&_pre]:whitespace-pre-wrap"
         dangerouslySetInnerHTML={{
           __html: articleContent,
         }}

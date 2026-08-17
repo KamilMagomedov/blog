@@ -44,7 +44,7 @@ const TravelPage = async ({ searchParams }: PageProps) => {
 
   const categories = await getCategories();
   const postsCalendar = await getPostsCalendar();
-  const postsTags = await getTags("travel");
+  const postsTags = await getTags();
 
   const mostPopularPostQueryBuilder: IGetPostQueryBuilder =
     getPostQueryBuilder()

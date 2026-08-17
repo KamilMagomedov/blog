@@ -48,12 +48,13 @@ const PostPage: React.FC<PostPageProps> = async ({ params }) => {
   if (!post) return notFound();
 
   return (
-    <section className="float-right flex h-full py-20 xs:w-full xs:flex-col lg:w-3/4 xl:flex-row">
-      <div className="container mx-auto px-[15px] sm:w-[540px] md:w-[720px] lg:w-[960px] lg:max-w-full xl:w-[1140px]">
-        <div className="mx-auto px-4 lg:w-2/3 2xl:pb-12">
+    <section className="min-h-screen w-full">
+      <div className="mx-auto w-full max-w-[1100px] px-5 py-12 lg:px-8">
+        <article className="mx-auto w-full max-w-[900px]">
           <PostBody post={post} />
+
           <ClientCommentsComponent comments={comments || []} id={post.id} />
-        </div>
+        </article>
       </div>
     </section>
   );

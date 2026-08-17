@@ -9,6 +9,7 @@ import { IPost } from "@/types/Posts";
 import { getPostImage } from "@/lib/getPostImages";
 import { lora } from "@/styles/fonts";
 import DevelopmentSkeleton from "@/app/development/ui/DevelopmentSkeleton";
+import ReadMoreLink from "../readMoreLink/ReadMoreLink";
 
 interface IListPostDevelopmentProps {
   data: IPost[];
@@ -25,16 +26,13 @@ const ListPostDevelopment: React.FC<IListPostDevelopmentProps> = React.memo(
     }, [data]);
 
     const postRefs = useRef<(HTMLLIElement | undefined | null)[]>([]);
-
-    const [visiblePosts, setVisiblePosts] = useState<{
-      [key: number]: boolean;
-    }>(() => {
-      const initial: { [key: number]: boolean } = {};
-      for (let i = 0; i < 5; i++) initial[i] = true;
-      return initial;
-    });
+    const [visiblePosts, setVisiblePosts] = useState<Record<number, boolean>>(
+      {},
+    );
 
     useEffect(() => {
+      if (loading) return;
+
       const observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
@@ -56,14 +54,14 @@ const ListPostDevelopment: React.FC<IListPostDevelopmentProps> = React.memo(
       });
 
       return () => observer.disconnect();
-    }, [data]);
+    }, [data, loading]);
 
     if (loading) {
       return <DevelopmentSkeleton />;
     }
 
     return (
-      <ul className="flex flex-col px-[15px]">
+      <ul className="flex flex-col gap-3">
         {data.map((post: IPost, index) => (
           <li
             key={post.id}
@@ -77,27 +75,23 @@ const ListPostDevelopment: React.FC<IListPostDevelopmentProps> = React.memo(
                 : "translateY(20px)",
               transition: `opacity 0.5s ease-out, transform 0.5s ease-out ${index * 0.05}s`,
             }}
-            className="mb-12 flex w-full items-center xs:mb-8 xs:flex-col lg:max-w-[100%] lg:flex-row"
+            className="group mb-12 flex w-full gap-5 transition-all duration-300 ease-out hover:-translate-y-1 xs:mb-8 xs:flex-col xs:items-center lg:max-w-[100%] lg:flex-row lg:items-start"
           >
-            <div className="relative block min-w-[150px] overflow-hidden rounded-[20px] xs:mb-4 xs:mr-0 lg:mb-0 lg:mr-4">
-              <Link
-                href={`/post/${post.id}`}
-                className="block h-[150px] w-[150px]"
-              >
+            <div className="relative h-[150px] w-[150px] shrink-0 overflow-hidden rounded-[20px]">
+              <Link href={`/post/${post.id}`} className="block h-full w-full">
                 <Image
                   src={getPostImage(post.image)}
-                  alt="My_photo"
+                  alt={post.title}
                   width={150}
                   height={150}
-                  className="h-full bg-cover bg-center bg-no-repeat object-cover"
-                  style={{ color: "black" }}
+                  className="h-full w-full object-cover object-center transition-transform duration-500 ease-out group-hover:scale-105"
                   loading="lazy"
                 />
               </Link>
             </div>
             <div className="xs:w-[100%]">
               <h3
-                className={`mb-6 font-normal leading-6 text-gray-900 xs:text-center xs:text-[1.3rem] lg:text-left lg:text-3xl ${lora.className}`}
+                className={`mb-3 font-normal leading-6 text-gray-900 xs:text-center xs:text-[1.3rem] lg:text-left lg:text-3xl ${lora.className}`}
               >
                 <Link
                   href={`/post/${post.id}`}
@@ -136,19 +130,10 @@ const ListPostDevelopment: React.FC<IListPostDevelopmentProps> = React.memo(
                     {post.likes ?? 0}
                   </span>
                 </div>
-                <p
-                  className="mb-6 line-clamp-3 xs:mb-0"
-                  dangerouslySetInnerHTML={{
-                    __html: post.description ?? "",
-                  }}
-                ></p>
-                <Link
-                  href={`/post/${post.id}`}
-                  className="relative mr-4 max-w-[165px] text-[#1eafed]"
-                >
-                  Read More About Post{" "}
-                  <span className="before:absolute before:right-[-15px] before:top-[15px] before:inline-block before:h-[2px] before:w-[9px] before:-rotate-45 before:bg-[#1eafed] before:content-[''] after:absolute after:right-[-15px] after:top-[10px] after:inline-block after:h-[2px] after:w-[9px] after:rotate-45 after:bg-[#1eafed] after:content-['']"></span>
-                </Link>
+                <p className="mb-6 line-clamp-3 xs:mb-0">
+                  {post.excerpt ?? ""}
+                </p>
+                <ReadMoreLink postId={post.id} />
               </div>
             </div>
           </li>

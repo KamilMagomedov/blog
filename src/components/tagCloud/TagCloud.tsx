@@ -41,31 +41,30 @@ const TagCloud: React.FC<ITagCloudProps> = ({
   }, [searchParams, setIsLoadingCallback]);
 
   return (
-    <div className="mb-[40px]">
-      <div className="mx-auto xs:w-[270px] md:w-[400px] 2xl:w-[270px]">
+    <div className="mb-10">
+      <div className="w-full min-w-0">
         <h3
           className={`mb-[30px] text-xl italic ${lora.className} text-[#000c]`}
         >
           Tag Cloud
         </h3>
-        <div className="flex">
-          <p className="mr-6">
-            {postsTags
-              ? postsTags.map((tag) => (
-                  <span
-                    key={tag.id}
-                    onClick={() => !isLoading && toggleTag(tag.name)}
-                    className={`mb-[7px] mr-1 inline-block cursor-pointer rounded border border-solid px-[10px] py-1 text-[11px] text-[#000] hover:border-[#000c] ${
-                      selected.includes(tag.name)
-                        ? "border-black bg-gray-200"
-                        : ""
-                    } ${isLoading ? "cursor-not-allowed opacity-50" : ""}`}
-                  >
-                    {(tag.slug || tag.name || "").toUpperCase()}
-                  </span>
-                ))
-              : "No tags available"}
-          </p>
+
+        <div className="flex flex-wrap gap-2">
+          {postsTags
+            ? postsTags.map((tag) => (
+                <span
+                  key={tag.id}
+                  onClick={() => !isLoading && toggleTag(tag.name)}
+                  className={`inline-block cursor-pointer rounded border border-solid px-[10px] py-1 text-[11px] text-black hover:border-[#000c] ${
+                    selected.includes(tag.name)
+                      ? "border-black bg-gray-200"
+                      : ""
+                  } ${isLoading ? "cursor-not-allowed opacity-50" : ""}`}
+                >
+                  {(tag.slug || tag.name || "").toUpperCase()}
+                </span>
+              ))
+            : "No tags available"}
         </div>
       </div>
     </div>

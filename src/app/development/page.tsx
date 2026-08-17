@@ -36,11 +36,14 @@ const DevelopmentPage = async ({ searchParams }: PageProps) => {
   const { data, paginator } = await fetchPosts(postQueryBuilder);
 
   return (
-    <section className="float-right flex h-full flex-col py-20 xs:w-full lg:w-3/4">
-      <div className="container mx-auto px-[15px] sm:w-[540px] md:w-[720px] lg:w-[960px] lg:max-w-full xl:w-[1140px]">
-        <ListPostDevelopment data={data} />
+    <section className="min-h-screen w-full">
+      <div className="mx-auto w-full max-w-[1280px] px-5 py-10 lg:px-8">
+        <div className="mx-auto w-full max-w-[1000px]">
+          <ListPostDevelopment data={data} />
+
+          <Pagination paginator={paginator} />
+        </div>
       </div>
-      <Pagination paginator={paginator} />
     </section>
   );
 };

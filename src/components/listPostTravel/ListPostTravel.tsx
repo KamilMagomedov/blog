@@ -3,7 +3,7 @@ import TravelSkeleton from "@/app/travel/ui/TravelSkeleton";
 import { getPostImage } from "@/lib/getPostImages";
 import { lora } from "@/styles/fonts";
 import { IPost } from "@/types/Posts";
-import { EyeIcon, Heart, MessageCircleMore } from "lucide-react";
+import { ArrowRight, EyeIcon, Heart, MessageCircleMore } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
@@ -25,38 +25,44 @@ const ListPostTravel: React.FC<IListPostTravelProps> = ({
   }, [data, setIsLoadingCallback]);
 
   const postRefs = useRef<(HTMLLIElement | undefined | null)[]>([]);
-
-  const [visiblePosts, setVisiblePosts] = useState<{ [key: number]: boolean }>(
-    () => {
-      const initial: { [key: number]: boolean } = {};
-      for (let i = 0; i < 2; i++) initial[i] = true;
-      return initial;
-    },
-  );
+  const [visiblePosts, setVisiblePosts] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
+    if (isLoading) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const index = postRefs.current.findIndex(
-              (ref) => ref === entry.target,
-            );
-            if (index !== -1) {
-              setVisiblePosts((prev) => ({ ...prev, [index]: true }));
-            }
-          }
+          if (!entry.isIntersecting) return;
+
+          const index = postRefs.current.findIndex(
+            (ref) => ref === entry.target,
+          );
+
+          if (index === -1) return;
+
+          setVisiblePosts((prev) => ({
+            ...prev,
+            [index]: true,
+          }));
+
+          observer.unobserve(entry.target);
         });
       },
-      { threshold: 0.1 },
+      {
+        rootMargin: "30px",
+        threshold: 0.1,
+      },
     );
 
     postRefs.current.forEach((post) => {
-      if (post) observer.observe(post);
+      if (post) {
+        observer.observe(post);
+      }
     });
 
     return () => observer.disconnect();
-  }, [data]);
+  }, [data, isLoading]);
 
   if (isLoading) {
     return <TravelSkeleton />;
@@ -77,7 +83,7 @@ const ListPostTravel: React.FC<IListPostTravelProps> = ({
               : "translateY(20px)",
             transition: `opacity 0.5s ease-out, transform 0.5s ease-out ${index * 0.05}s`,
           }}
-          className="flex w-full max-w-[100%] flex-col items-center xs:mb-8 lg:mb-12"
+          className="group flex w-full max-w-[100%] flex-col items-center transition-all duration-300 ease-out hover:-translate-y-1 xs:mb-8 lg:mb-12"
         >
           <div className="relative block overflow-hidden rounded-[20px] xs:mb-4 lg:mb-6">
             <Link
@@ -86,11 +92,10 @@ const ListPostTravel: React.FC<IListPostTravelProps> = ({
             >
               <Image
                 src={getPostImage(travel.image)}
-                alt="photo travel"
+                alt={travel.title}
                 width={400}
                 height={400}
-                className="h-full bg-cover bg-center bg-no-repeat object-cover"
-                style={{ color: "black" }}
+                className="h-full bg-cover bg-center bg-no-repeat object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                 priority
               />
             </Link>
@@ -99,7 +104,12 @@ const ListPostTravel: React.FC<IListPostTravelProps> = ({
             <h3
               className={`mb-6 text-left font-normal leading-6 text-gray-900 xs:text-[1.3rem] lg:text-3xl ${lora.className}`}
             >
-              <Link href={`/post/${travel.id}`}>{travel.title}</Link>
+              <Link
+                href={`/post/${travel.id}`}
+                className="transition-colors duration-300 hover:text-[#1eafed]"
+              >
+                {travel.title}
+              </Link>
             </h3>
             <div className="flex xs:mb-4 xs:flex-col lg:mb-8">
               <p className="mb-6 line-clamp-5 overflow-hidden text-ellipsis">
@@ -136,9 +146,14 @@ const ListPostTravel: React.FC<IListPostTravelProps> = ({
             <div className="flex justify-between xs:flex-col-reverse md:flex-row">
               <Link
                 href={`/post/${travel.id}`}
-                className="relative mr-4 rounded-[30px] bg-[#1eafed] px-6 py-4 text-[#fff] xs:mx-auto md:mx-0"
+                className="group/readmore relative mr-4 inline-flex items-center gap-2 rounded-[30px] bg-[#1eafed] px-6 py-4 text-white transition-transform duration-300 hover:-translate-y-0.5"
               >
-                Read More About Post
+                <span>Read More About Post</span>
+
+                <ArrowRight
+                  size={17}
+                  className="transition-transform duration-300 group-hover/readmore:translate-x-1"
+                />
               </Link>
 
               <div className="flex xs:mb-[20px] xs:justify-center md:mb-0">

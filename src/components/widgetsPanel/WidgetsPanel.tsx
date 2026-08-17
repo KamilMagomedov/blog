@@ -33,21 +33,28 @@ const WidgetsPanel: React.FC<WidgetsPanelProps> = ({
   }
 
   return (
-    <div className="sidebar bg-[#f8f9fa] pt-12 text-[#212529] xs:w-full xs:max-w-[100%] 2xl:w-1/3 2xl:max-w-[33.333%] 2xl:flex-shrink-0 2xl:flex-grow-0">
-      <SearchKeywords setIsLoadingCallback={setIsLoadingCallback} />
-      <Categories categories={categories.data} />
-      <PopularArticles topThreePopular={topThreePopular} />
-      <TagCloud
-        isLoading={isLoading}
-        setIsLoadingCallback={setIsLoadingCallback}
-        postsTags={postsTags}
-      />
-      <Newsletter />
-      <Archives
-        postsCalendar={postsCalendar}
-        setIsLoadingCallback={setIsLoadingCallback}
-      />
-    </div>
+    <aside className="sidebar min-w-0 self-stretch bg-[#f8f9fa] py-10 text-[#212529]">
+      <div className="mx-auto w-full max-w-[520px] px-4 xl:max-w-[280px] xl:px-3">
+        <SearchKeywords setIsLoadingCallback={setIsLoadingCallback} />
+
+        <Categories categories={categories.data} />
+
+        <PopularArticles topThreePopular={topThreePopular} />
+
+        <TagCloud
+          isLoading={isLoading}
+          setIsLoadingCallback={setIsLoadingCallback}
+          postsTags={postsTags}
+        />
+
+        <Newsletter />
+
+        <Archives
+          postsCalendar={postsCalendar}
+          setIsLoadingCallback={setIsLoadingCallback}
+        />
+      </div>
+    </aside>
   );
 };
 

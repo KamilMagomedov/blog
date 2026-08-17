@@ -45,17 +45,19 @@ const TravelClient: React.FC<ITravelClientProps> = ({
   }, []);
 
   return (
-    <section className="float-right flex h-full flex-col xs:w-full lg:w-3/4">
-      <div className="container mx-auto px-[15px] sm:w-[540px] md:w-[720px] lg:w-[960px] lg:max-w-full xl:w-[1140px]">
-        <div className="flex flex-wrap xs:flex-col 2xl:flex-row">
-          <div className="2xl:flex-basic-[66.6%] xs:flex-basic-[100%] flex w-full flex-shrink-0 flex-grow-0 flex-col xs:max-w-[100%] xs:px-0 xs:pt-8 lg:p-12 2xl:max-w-[66.6%]">
+    <section className="min-h-screen w-full">
+      <div className="mx-auto w-full max-w-[1280px] px-5 lg:px-8">
+        <div className="grid grid-cols-1 items-stretch gap-10 xl:grid-cols-[minmax(0,1fr)_340px]">
+          <main className="min-w-0 py-10">
             <ListPostTravel
               data={data}
               isLoading={isLoading}
               setIsLoadingCallback={setIsLoadingCallback}
             />
-            <Pagination paginator={paginator} type="travel" />
-          </div>
+
+            <Pagination paginator={paginator} />
+          </main>
+
           <WidgetsPanel
             categories={categories}
             topThreePopular={topThreePopular}

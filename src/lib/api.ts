@@ -35,6 +35,11 @@ const mapPostDates = (post: any) => {
     likes: post.likes ?? 0,
     views: post.views ?? 0,
     comments_count: post.comments_count ?? 0,
+
+    category: {
+      title: post.category_name || post.category?.title || "Uncategorized",
+    },
+
     author: {
       name: post.author_name || post.author?.name || "Kamil Mahomedov",
       avatar: authorAvatar,
@@ -285,19 +290,26 @@ export const fetchPosts = async (postQueryBuilder: IGetPostQueryBuilder) => {
 
 // 2. Получение одного поста по ID
 export const getPostById = async (postId: string): Promise<IPost> => {
-  if (!postId) throw new Error("Post Id is required");
+  const numericPostId = Number(postId);
+
+  if (!Number.isInteger(numericPostId) || numericPostId <= 0) {
+    throw new Error("Invalid Post Id");
+  }
 
   try {
     const posts = await sql`
       SELECT
         posts.*,
+        categories.name AS category_name,
         (
           SELECT COUNT(*)::int
           FROM comments c
           WHERE c.post_id = posts.id
         ) AS comments_count
       FROM posts
-      WHERE posts.id = ${postId}
+      LEFT JOIN categories
+        ON categories.id = posts.category_id
+      WHERE posts.id = ${numericPostId}
       LIMIT 1
     `;
 

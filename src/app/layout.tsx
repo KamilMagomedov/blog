@@ -42,12 +42,12 @@ export default function RootLayout({
       >
         <BurgerMenuProvider>
           <ModalProvider>
-            <main className="relative h-full w-full xs:overflow-y-auto">
+            <div className="min-h-dvh w-full">
               <BurgerMenu />
               <Aside />
-              {children}
+              <main className="min-h-dvh w-full lg:pl-[260px]">{children}</main>
               <Modal />
-            </main>
+            </div>
           </ModalProvider>
         </BurgerMenuProvider>
       </body>

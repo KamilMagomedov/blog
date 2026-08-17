@@ -64,7 +64,7 @@ const ContactForm: React.FC = () => {
     <div className="h-full">
       <form
         onSubmit={handleSubmit}
-        className="mx-auto max-w-3xl rounded bg-[#f8f9fa] xs:p-[10px] lg:p-12"
+        className="mx-auto w-full max-w-[900px] rounded-lg bg-[#f8f9fa] p-6 lg:p-10"
       >
         <input
           type="text"
@@ -73,7 +73,7 @@ const ContactForm: React.FC = () => {
           onChange={handleChange}
           placeholder="Your Name"
           required
-          className="mb-4 w-full rounded border-gray-300 p-2"
+          className="mb-4 w-full rounded border border-gray-300 bg-white px-4 py-3 outline-none transition-colors focus:border-[#1eafed]"
         />
 
         <input
@@ -83,7 +83,7 @@ const ContactForm: React.FC = () => {
           onChange={handleChange}
           placeholder="Your Email"
           required
-          className="mb-4 w-full rounded border-gray-300 p-2"
+          className="mb-4 w-full rounded border border-gray-300 bg-white px-4 py-3 outline-none transition-colors focus:border-[#1eafed]"
         />
 
         <input
@@ -93,7 +93,7 @@ const ContactForm: React.FC = () => {
           onChange={handleChange}
           placeholder="Subject"
           required
-          className="mb-4 w-full rounded border-gray-300 p-2"
+          className="mb-4 w-full rounded border border-gray-300 bg-white px-4 py-3 outline-none transition-colors focus:border-[#1eafed]"
         />
 
         <textarea
@@ -103,7 +103,7 @@ const ContactForm: React.FC = () => {
           placeholder="Message"
           required
           rows={4}
-          className="mb-4 w-full rounded border-gray-300 p-2"
+          className="mb-4 w-full rounded border border-gray-300 bg-white px-4 py-3 outline-none transition-colors focus:border-[#1eafed]"
         ></textarea>
 
         <button

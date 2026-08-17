@@ -30,28 +30,30 @@ const AboutClient: React.FC<IAboutClientProps> = ({ aboutAuthorInform }) => {
   const mainImage = aboutAuthorInform.image || "/image_not_found.webp";
 
   return (
-    <section className="float-right flex h-full xs:w-full xs:flex-col lg:w-3/4 xl:flex-row">
-      <div className="relative h-full w-1/2 xs:min-h-full xs:w-full">
-        <Image
-          src={mainImage}
-          alt="My_photo"
-          fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="rounded-[20px] object-cover"
-          priority
-        />
-      </div>
-      <div className="flex w-1/2 items-center px-[15px] pt-12 xs:w-full xs:text-center xl:text-left">
-        <div className="lg:px-6">
-          <h2 className="text-5xl font-semibold leading-[1.2] text-black xs:text-[2rem]">
+    <section className="min-h-screen w-full">
+      <div className="mx-auto grid w-full max-w-[1280px] grid-cols-1 gap-10 px-5 py-12 lg:px-8 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] xl:items-center">
+        <div className="relative min-h-[450px] overflow-hidden rounded-[20px] sm:min-h-[550px] xl:min-h-[650px]">
+          <Image
+            src={mainImage}
+            alt={aboutAuthorInform.name ?? "Kamil Mahomedov"}
+            fill
+            sizes="(max-width: 1279px) 100vw, 45vw"
+            className="object-cover object-center"
+            priority
+          />
+        </div>
+
+        <div className="min-w-0">
+          <h2 className="mb-6 text-4xl font-semibold leading-[1.15] text-black lg:text-5xl">
             I am{" "}
             <span className="font-black text-[#1eafed]">
               {aboutAuthorInform.name ?? "Unknown Author"}
             </span>
             , a passionate Frontend Developer & Tech Enthusiast.
           </h2>
+
           <div
-            className="xs:pb-[30px]"
+            className="space-y-4 leading-7 text-gray-600"
             dangerouslySetInnerHTML={{
               __html:
                 aboutAuthorInform.text || "<p>No description available.</p>",

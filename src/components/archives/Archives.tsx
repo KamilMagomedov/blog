@@ -26,7 +26,7 @@ const Archives: React.FC<IPostsCalendarProps> = ({
 
   return (
     <div className="mb-[40px]">
-      <div className="mx-auto xs:w-[270px] md:w-[400px] 2xl:w-[270px]">
+      <div className="w-full min-w-0">
         <h3
           className={`mb-[30px] text-xl italic ${lora.className} text-[#000c]`}
         >

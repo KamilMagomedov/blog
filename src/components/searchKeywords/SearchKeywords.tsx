@@ -46,16 +46,17 @@ const SearchKeywords: React.FC<SearchKeywordsProps> = ({
   };
 
   return (
-    <div className="mb-[40px]">
-      <div className="relative mx-auto xs:w-[270px] md:w-[400px] 2xl:w-[270px]">
+    <div className="mb-10">
+      <div className="relative w-full min-w-0">
         <input
           type="text"
           value={inputValue}
           onChange={handleChange}
-          className="h-[52px] w-full border bg-[white] py-[6px] pl-3 pr-[50px] text-sm text-[black] outline-black"
-          placeholder="Type a keyword and hit enter"
+          className="h-[52px] w-full border bg-white py-[6px] pl-3 pr-[50px] text-sm text-black outline-black"
+          placeholder="Search articles..."
         />
-        <span className="absolute right-[15px] top-[19px] h-[15px] w-[15px]">
+
+        <span className="absolute right-[15px] top-1/2 h-[15px] w-[15px] -translate-y-1/2">
           <Search className="h-full w-full" />
         </span>
       </div>
