@@ -16,6 +16,7 @@ const ContactForm: React.FC = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -28,35 +29,48 @@ const ContactForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     setIsSubmitting(true);
+    setSuccessMessage(null);
+    setErrorMessage(null);
 
     try {
       const response = await fetch("/api/contact", {
         method: "POST",
+
         headers: {
           "Content-Type": "application/json",
         },
+
         body: JSON.stringify(formData),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error("Failed to send message");
+        throw new Error(data.message || "Failed to send message");
       }
 
       setSuccessMessage(
-        "Thank you for reaching out! I'll get back to you soon.",
+        data.message || "Thank you! I'll get back to you soon.",
       );
-    } catch (error) {
-      console.error("Error sending message:", error);
-      setSuccessMessage(null);
-    } finally {
-      setIsSubmitting(false);
+
       setFormData({
         name: "",
         email: "",
         subject: "",
         message: "",
       });
+    } catch (error) {
+      console.error("Error sending message:", error);
+
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong. Please try again.",
+      );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -109,13 +123,20 @@ const ContactForm: React.FC = () => {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="rounded-[30px] border-[1px] border-solid border-[#1eafed] bg-[#1eafed] px-12 py-4 text-white transition-colors duration-500 ease-in-out hover:bg-transparent hover:text-[#1eafed] xs:mx-auto xs:my-0 xs:block xs:w-[208px]"
+          className="rounded-[30px] border border-[#1eafed] bg-[#1eafed] px-12 py-4 text-white transition-colors duration-300 hover:bg-transparent hover:text-[#1eafed] disabled:cursor-not-allowed disabled:opacity-50 xs:mx-auto xs:block xs:w-[208px]"
         >
           {isSubmitting ? "Sending..." : "Send Message"}
         </button>
+
         {successMessage && (
           <p className="mt-4 text-center text-sm text-green-600">
             {successMessage}
+          </p>
+        )}
+
+        {errorMessage && (
+          <p className="mt-4 text-center text-sm text-red-600">
+            {errorMessage}
           </p>
         )}
       </form>

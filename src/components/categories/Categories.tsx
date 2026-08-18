@@ -1,16 +1,16 @@
 import { lora } from "@/styles/fonts";
-import { ICategory } from "@/types/Travel";
+import { ICategorySummary } from "@/types/Travel";
 
 interface ICategoriesProps {
-  categories: ICategory[] | null;
+  categories: ICategorySummary[] | null;
 }
 
 const Categories: React.FC<ICategoriesProps> = ({ categories }) => {
   if (!categories || categories.length === 0) return null;
 
   return (
-    <div className="mb-10">
-      <div className="w-full min-w-0">
+    <div className="mb-[40px]">
+      <div className="mx-auto w-full">
         <h3
           className={`mb-[30px] text-xl italic ${lora.className} text-[#000c]`}
         >
@@ -23,11 +23,11 @@ const Categories: React.FC<ICategoriesProps> = ({ categories }) => {
               key={category.id}
               className="relative mb-[10px] border-b border-[#dee2e6] pb-[10px]"
             >
-              <p className="flex items-center justify-between text-black">
-                <span>{category.title}</span>
+              <p className="text-black">
+                {category.title}
 
-                <span className="font-black text-[#575557]">
-                  ({category.posts_count ?? 0})
+                <span className="absolute right-0 top-0 font-black text-[#575557]">
+                  ({category.posts_count})
                 </span>
               </p>
             </li>

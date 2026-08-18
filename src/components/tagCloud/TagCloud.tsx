@@ -18,22 +18,17 @@ const TagCloud: React.FC<ITagCloudProps> = ({
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const selected = searchParams?.get("tags")?.split(",") || [];
+  const selectedTag = searchParams?.get("tags") || null;
 
-  const toggleTag = (tag: string) => {
+  const showPostsByTag = (slug: string) => {
     setIsLoadingCallback(true);
-    const updatedTags = selected.includes(tag)
-      ? selected.filter((item) => item !== tag)
-      : [...selected, tag];
 
-    const params = new URLSearchParams(searchParams || undefined);
-    if (updatedTags.length > 0) {
-      params.set("tags", updatedTags.join(","));
-    } else {
-      params.delete("tags");
+    if (selectedTag === slug) {
+      router.push("/");
+      return;
     }
 
-    router.push(`?${params.toString()}`);
+    router.push(`/?tags=${encodeURIComponent(slug)}&page=1`);
   };
 
   useEffect(() => {
@@ -50,21 +45,21 @@ const TagCloud: React.FC<ITagCloudProps> = ({
         </h3>
 
         <div className="flex flex-wrap gap-2">
-          {postsTags
-            ? postsTags.map((tag) => (
-                <span
-                  key={tag.id}
-                  onClick={() => !isLoading && toggleTag(tag.name)}
-                  className={`inline-block cursor-pointer rounded border border-solid px-[10px] py-1 text-[11px] text-black hover:border-[#000c] ${
-                    selected.includes(tag.name)
-                      ? "border-black bg-gray-200"
-                      : ""
-                  } ${isLoading ? "cursor-not-allowed opacity-50" : ""}`}
-                >
-                  {(tag.slug || tag.name || "").toUpperCase()}
-                </span>
-              ))
-            : "No tags available"}
+          {postsTags.map((tag) => {
+            const slug = tag.slug || tag.name;
+
+            return (
+              <span
+                key={tag.id}
+                onClick={() => !isLoading && showPostsByTag(slug)}
+                className={`mb-[7px] mr-1 inline-block cursor-pointer rounded border border-solid px-[10px] py-1 text-[11px] text-[#000] transition-colors hover:border-[#000c] ${
+                  selectedTag === slug ? "border-black bg-gray-200" : ""
+                } ${isLoading ? "cursor-not-allowed opacity-50" : ""}`}
+              >
+                {(tag.name || slug).toUpperCase()}
+              </span>
+            );
+          })}
         </div>
       </div>
     </div>

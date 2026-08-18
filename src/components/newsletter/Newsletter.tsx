@@ -7,9 +7,13 @@ const Newsletter: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
   const [showMessage, setShowMessage] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
+
+    setIsSubmitting(true);
+    setError(null);
 
     try {
       const response = await fetch("/api/subscriptions", {
@@ -39,6 +43,8 @@ const Newsletter: React.FC = () => {
 
       setError("Failed to connect to the server");
       setShowMessage(true);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -78,8 +84,8 @@ const Newsletter: React.FC = () => {
           </h3>
 
           <p className="mb-4 text-sm leading-relaxed">
-            Far far away, behind the word mountains, far from the countries
-            Vokalia
+            Get occasional updates about my development projects, tech meetups
+            and travel stories.
           </p>
         </div>
 
@@ -91,16 +97,18 @@ const Newsletter: React.FC = () => {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email Address"
+            placeholder="Email address"
+            autoComplete="email"
             className="mb-2 h-[45px] w-full rounded border border-solid border-[#fff3] bg-transparent px-3 py-[6px] text-center text-base font-black placeholder-white placeholder-opacity-70 focus:outline-none"
             required
           />
 
           <button
             type="submit"
-            className="h-[45px] w-full rounded bg-white px-3 py-[6px] text-base font-semibold text-black transition-colors hover:bg-gray-100"
+            disabled={isSubmitting}
+            className="h-[45px] w-full rounded bg-white px-3 py-[6px] text-base font-semibold text-black transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Subscribe
+            {isSubmitting ? "Subscribing..." : "Subscribe"}
           </button>
         </form>
       </div>

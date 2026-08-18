@@ -8,20 +8,27 @@ export interface IPost {
   id: number | string;
   title: string;
   type: string;
+
   description?: string;
   content?: string;
   excerpt?: string;
+
   cover_image?: string;
   image?: string;
   images?: string[];
+
   likes?: number;
   views?: number;
   comments_count: number;
+
   published_at?: string;
+
   author: IAuthor;
+
   category?: {
     title: string;
   };
+
   meta_title?: string;
   meta_description?: string;
   meta_keywords?: string[];

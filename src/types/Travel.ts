@@ -1,11 +1,6 @@
 export interface ICategories {
-  data: ICategory[];
+  data: ICategorySummary[];
   success: boolean;
-}
-
-export interface ICategoryForm {
-  categories: ICategory[];
-  tags: ITag[];
 }
 
 export interface ICategory {
@@ -36,4 +31,10 @@ export interface IMonth {
   month: string;
   total: number;
   monthName: string;
+}
+
+export interface ICategorySummary {
+  id: number;
+  title: string;
+  posts_count: number;
 }

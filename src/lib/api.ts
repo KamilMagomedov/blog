@@ -12,6 +12,15 @@ import {
   IComment,
 } from "@/types/Posts";
 import { ICategories, IPostCalendar } from "@/types/Travel";
+import {
+  AuthorDatabaseRow,
+  CalendarPostDatabaseRow,
+  CategoryDatabaseRow,
+  CommentDatabaseRow,
+  ContactDatabaseRow,
+  PostDatabaseRow,
+  TagDatabaseRow,
+} from "@/types/Database";
 
 const formatDate = (dateStr: string) => {
   if (!dateStr) return "";
@@ -23,25 +32,35 @@ const formatDate = (dateStr: string) => {
   });
 };
 
-const mapPostDates = (post: any) => {
-  const authorAvatar =
-    post.author_avatar || post.author?.avatar || "/author.jpg";
+const mapPostDates = (post: PostDatabaseRow): IPost => {
+  const authorAvatar = post.author_avatar || "/author.jpg";
 
   return {
-    ...post,
-    coverImage: post.cover_image,
-    image: post.cover_image,
-    published_at: formatDate(post.published_at),
+    id: post.id,
+    title: post.title,
+    type: post.type,
+
+    description: post.description ?? undefined,
+    content: post.content ?? undefined,
+    excerpt: post.excerpt ?? undefined,
+
+    cover_image: post.cover_image ?? undefined,
+    image: post.cover_image ?? undefined,
+
+    published_at: post.published_at
+      ? formatDate(String(post.published_at))
+      : "",
+
     likes: post.likes ?? 0,
     views: post.views ?? 0,
     comments_count: post.comments_count ?? 0,
 
     category: {
-      title: post.category_name || post.category?.title || "Uncategorized",
+      title: post.category_name || "Uncategorized",
     },
 
     author: {
-      name: post.author_name || post.author?.name || "Kamil Mahomedov",
+      name: post.author_name || "Kamil Mahomedov",
       avatar: authorAvatar,
       image: authorAvatar,
     },
@@ -201,6 +220,8 @@ export const fetchPosts = async (postQueryBuilder: IGetPostQueryBuilder) => {
       OFFSET ${offset}
     `;
 
+    const typedPosts = posts as PostDatabaseRow[];
+
     const countResult = await sql`
       SELECT COUNT(*)::int AS total
 
@@ -257,7 +278,7 @@ export const fetchPosts = async (postQueryBuilder: IGetPostQueryBuilder) => {
     const lastPage = Math.max(1, Math.ceil(total / limit));
 
     return {
-      data: posts.map(mapPostDates) as unknown as IPost[],
+      data: typedPosts.map(mapPostDates),
 
       paginator: {
         current_page: page,
@@ -265,7 +286,7 @@ export const fetchPosts = async (postQueryBuilder: IGetPostQueryBuilder) => {
         last_page: lastPage,
         total,
         has_more: page < lastPage,
-      } as IPaginator,
+      },
 
       success: true,
     };
@@ -317,20 +338,22 @@ export const getPostById = async (postId: string): Promise<IPost> => {
       throw new Error("Post not found");
     }
 
-    const rawPost = posts[0];
+    const rawPost = posts[0] as PostDatabaseRow;
     const mappedPost = mapPostDates(rawPost);
 
     return {
       ...mappedPost,
+
       images:
         Array.isArray(rawPost.images) && rawPost.images.length > 0
           ? rawPost.images
           : rawPost.cover_image
             ? [rawPost.cover_image]
             : [],
+
       likes: rawPost.likes ?? 0,
       views: rawPost.views ?? 0,
-    } as unknown as IPost;
+    };
   } catch (error) {
     console.error("Error fetching post by id:", error);
     throw error;
@@ -350,7 +373,16 @@ export const getCategories = async (): Promise<ICategories | null> => {
       GROUP BY c.id, c.name
     `;
 
-    return { data: categories } as unknown as ICategories;
+    const typedCategories = categories as CategoryDatabaseRow[];
+
+    return {
+      data: typedCategories.map((category) => ({
+        id: category.id,
+        title: category.title,
+        posts_count: category.posts_count,
+      })),
+      success: true,
+    };
   } catch (error) {
     console.error("Error fetching categories:", error);
     return null;
@@ -361,44 +393,55 @@ export const getCategories = async (): Promise<ICategories | null> => {
 export const getPostsCalendar = async (): Promise<IPostCalendar[]> => {
   try {
     const posts = await sql`
-      SELECT published_at 
-      FROM posts 
-      WHERE published_at IS NOT NULL 
+      SELECT published_at
+      FROM posts
+      WHERE published_at IS NOT NULL
       ORDER BY published_at DESC
     `;
 
-    // Группируем посты по годам и месяцам
+    const typedPosts = posts as CalendarPostDatabaseRow[];
+
     const calendarMap: Record<
       string,
       Record<string, { monthName: string; total: number }>
     > = {};
 
-    posts.forEach((post) => {
+    typedPosts.forEach((post) => {
       const date = new Date(post.published_at);
+
       const year = date.getFullYear().toString();
+
       const monthNum = (date.getMonth() + 1).toString().padStart(2, "0");
-      const monthName = date.toLocaleString("en-US", { month: "long" });
+
+      const monthName = date.toLocaleString("en-US", {
+        month: "long",
+      });
 
       if (!calendarMap[year]) {
         calendarMap[year] = {};
       }
 
       if (!calendarMap[year][monthNum]) {
-        calendarMap[year][monthNum] = { monthName, total: 0 };
+        calendarMap[year][monthNum] = {
+          monthName,
+          total: 0,
+        };
       }
 
       calendarMap[year][monthNum].total += 1;
     });
 
-    // Преобразуем структуру в массив [{ year, months: [...] }]
-    return Object.keys(calendarMap).map((year) => ({
+    const calendar: IPostCalendar[] = Object.keys(calendarMap).map((year) => ({
       year,
+
       months: Object.keys(calendarMap[year]).map((month) => ({
         month,
         monthName: calendarMap[year][month].monthName,
         total: calendarMap[year][month].total,
       })),
-    })) as unknown as IPostCalendar[];
+    }));
+
+    return calendar;
   } catch (error) {
     console.error("Error fetching posts calendar:", error);
     return [];
@@ -421,18 +464,32 @@ export async function getComments(postId: string): Promise<IComment[]> {
       ORDER BY created_at ASC
     `;
 
+    const comments = rawComments as CommentDatabaseRow[];
+
     const map = new Map<number, IComment>();
     const roots: IComment[] = [];
 
-    rawComments.forEach((item: any) => {
-      map.set(item.id, { ...item, comments: [] });
+    comments.forEach((item) => {
+      map.set(item.id, {
+        id: item.id,
+        name: item.name,
+        email: item.email,
+        comment: item.comment,
+        logo: item.logo,
+        created_at: formatDate(String(item.created_at)),
+        comments: [],
+      });
     });
 
-    rawComments.forEach((item: any) => {
+    comments.forEach((item) => {
+      const currentComment = map.get(item.id);
+
+      if (!currentComment) return;
+
       if (item.parent_id && map.has(item.parent_id)) {
-        map.get(item.parent_id)!.comments?.push(map.get(item.id)!);
+        map.get(item.parent_id)?.comments?.push(currentComment);
       } else {
-        roots.push(map.get(item.id)!);
+        roots.push(currentComment);
       }
     });
 
@@ -444,26 +501,34 @@ export async function getComments(postId: string): Promise<IComment[]> {
 }
 
 // 6. Контакты
-export const getContactItems =
-  async (): Promise<IContactsInformation | null> => {
-    try {
-      const data = await sql`
+export const getContactItems = async (): Promise<IContactsInformation> => {
+  try {
+    const data = await sql`
         SELECT id, title, value 
         FROM contact_information
       `;
 
-      return {
-        data: data as unknown as IContactInformation[],
-        success: true,
-      };
-    } catch (error) {
-      console.error("Error fetching contact items:", error);
-      return {
-        data: null,
-        success: false,
-      };
-    }
-  };
+    const typedContacts = data as ContactDatabaseRow[];
+
+    const contacts: IContactInformation[] = typedContacts.map((contact) => ({
+      id: contact.id,
+      image: contact.image ?? undefined,
+      title: contact.title,
+      value: contact.value,
+    }));
+
+    return {
+      data: contacts,
+      success: true,
+    };
+  } catch (error) {
+    console.error("Error fetching contact items:", error);
+    return {
+      data: null,
+      success: false,
+    };
+  }
+};
 
 // 7. Об авторе
 export const getAuthorInformation = async (): Promise<Data | null> => {
@@ -474,33 +539,53 @@ export const getAuthorInformation = async (): Promise<Data | null> => {
       LIMIT 1
     `;
 
-    if (author && author.length > 0) {
-      return author[0] as unknown as Data;
+    const typedAuthors = author as AuthorDatabaseRow[];
+
+    if (typedAuthors.length === 0) {
+      return null;
     }
 
-    return null;
+    const authorData: Data = {
+      name: typedAuthors[0].name,
+      image: typedAuthors[0].image ?? "/image_not_found.webp",
+      text: typedAuthors[0].text ?? "",
+    };
+
+    return authorData;
   } catch (error) {
-    console.error("Error fetching author info:", error);
+    console.error("Error fetching author information:", error);
     return null;
   }
 };
 
 // 8. Теги
-export const getTags = async (param: string | null = null): Promise<ITag[]> => {
+export const getTags = async (): Promise<ITag[]> => {
   try {
-    const tags = param
-      ? await sql`
-          SELECT id, name, slug 
-          FROM tags 
-          WHERE slug = ${param}
-             OR name ILIKE ${"%" + param + "%"}
-        `
-      : await sql`
-          SELECT id, name, slug
-          FROM tags
-        `;
+    const tags = await sql`
+      SELECT DISTINCT
+        t.id,
+        t.name,
+        t.slug
+      FROM tags t
 
-    return tags as unknown as ITag[];
+      JOIN post_tags pt
+        ON pt.tag_id = t.id
+
+      WHERE t.slug NOT IN (
+        'travel',
+        'development'
+      )
+
+      ORDER BY t.name ASC
+    `;
+
+    const typedTags = tags as TagDatabaseRow[];
+
+    return typedTags.map((tag) => ({
+      id: tag.id,
+      name: tag.name,
+      slug: tag.slug,
+    }));
   } catch (error) {
     console.error("Error fetching tags:", error);
     return [];
@@ -553,7 +638,9 @@ export const getPopularPosts = async (): Promise<IPost[]> => {
       LIMIT 3
     `;
 
-    return posts.map(mapPostDates) as IPost[];
+    const typedPosts = posts as PostDatabaseRow[];
+
+    return typedPosts.map(mapPostDates);
   } catch (error) {
     console.error("Error fetching popular posts:", error);
     return [];
