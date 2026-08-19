@@ -21,8 +21,8 @@ const ContactPage: React.FC = async () => {
   const contactData = await getContactItems();
 
   return (
-    <section className="min-h-screen w-full">
-      <div className="mx-auto w-full max-w-[1280px] px-5 py-12 lg:px-8">
+    <section className="min-h-screen w-full lg:flex lg:items-center">
+      <div className="mx-auto w-full max-w-[1100px] px-5 py-12 lg:px-8">
         <ContactInformation initialContacts={contactData?.data || []} />
         <ContactForm />
       </div>
