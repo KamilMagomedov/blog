@@ -17,11 +17,12 @@ const LikeButton: React.FC<ILikeButtonProps> = ({ initialLikes, id }) => {
   const [like, setLike] = useState<boolean>(false);
 
   useEffect(() => {
-    const likes: string | null = localStorage.getItem("likes");
+    const likes = localStorage.getItem("likes");
     const decodeLikes: number[] = likes ? JSON.parse(likes) : [];
-    if (decodeLikes.includes(numericId)) {
-      setLike(true);
-    }
+
+    // Restore the liked state from browser storage after mount.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setLike(decodeLikes.includes(numericId));
   }, [numericId]);
 
   const handleLike = () => {

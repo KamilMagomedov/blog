@@ -592,19 +592,10 @@ export const getTags = async (): Promise<ITag[]> => {
   }
 };
 
-// 9. Лайки и Дизлайки
+// 9. Лайки
 export const likePost = async (id: number): Promise<boolean> => {
   try {
     await sql`UPDATE posts SET likes = COALESCE(likes, 0) + 1 WHERE id = ${id}`;
-    return true;
-  } catch (error) {
-    console.error(error);
-    return false;
-  }
-};
-
-export const disLikePost = async (id: number): Promise<boolean> => {
-  try {
     return true;
   } catch (error) {
     console.error(error);
