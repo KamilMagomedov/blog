@@ -10,12 +10,13 @@ const AboutClient = dynamic(
 export const metadata: Metadata = {
   title: "About the Author | Kamil's Blog",
   description:
-    "Learn more about Kamil, a passionate Frontend Developer & Tech Enthusiast. Discover his journey, skills, and experiences.",
+    "Learn more about Kamil Mahomedov, a Frontend Developer based in London, his professional experience and personal projects.",
   keywords: [
-    "about author",
+    "Kamil Mahomedov",
     "frontend developer",
-    "tech enthusiast",
-    "Kamil",
+    "React developer",
+    "Next.js developer",
+    "London",
     "web development",
   ],
 };

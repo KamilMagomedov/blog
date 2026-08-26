@@ -49,16 +49,21 @@ const AboutClient: React.FC<IAboutClientProps> = ({ aboutAuthorInform }) => {
             <span className="font-black text-[#1eafed]">
               {aboutAuthorInform.name ?? "Unknown Author"}
             </span>
-            , a passionate Frontend Developer & Tech Enthusiast.
+            , a Frontend Developer based in London.
           </h2>
 
-          <div
-            className="space-y-4 text-center leading-7 text-gray-600 xl:text-left"
-            dangerouslySetInnerHTML={{
-              __html:
-                aboutAuthorInform.text || "<p>No description available.</p>",
-            }}
-          />
+          <div className="space-y-4 text-center leading-7 text-gray-600 xl:text-left">
+            {aboutAuthorInform.text ? (
+              aboutAuthorInform.text
+                .trim()
+                .split(/\n\s*\n/)
+                .map((paragraph, index) => (
+                  <p key={index}>{paragraph.trim()}</p>
+                ))
+            ) : (
+              <p>No description available.</p>
+            )}
+          </div>
         </div>
       </div>
     </section>
