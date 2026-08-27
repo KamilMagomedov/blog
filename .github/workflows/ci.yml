@@ -36,4 +36,6 @@ jobs:
         run: npm test -- --runInBand
 
       - name: Run production build
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: npm run build
