@@ -34,3 +34,6 @@ jobs:
 
       - name: Run Jest tests
         run: npm test -- --runInBand
+
+      - name: Run production build
+        run: npm run build
