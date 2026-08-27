@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "test": "jest",
-    "format": "prettier --write ."
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
