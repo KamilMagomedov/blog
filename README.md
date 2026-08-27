@@ -1,10 +1,10 @@
 # Kamil's Blog
 
-A full-stack personal blog built with Next.js, TypeScript, PostgreSQL and Vercel.
+A full-stack personal blog built with Next.js, TypeScript, PostgreSQL (Neon) and Vercel.
 
 The project combines two of my main interests: software development and travel. I use the blog to publish articles about tech meetups, programming, travel experiences and life in London.
 
-The application was developed as both a personal blog and a portfolio project, with a focus on responsive design, clean architecture, type safety and real-world functionality.
+The application was developed as both a personal blog and a portfolio project, with a focus on responsive design, maintainable structure, type safety and real-world functionality.
 
 ## Live Demo
 
@@ -85,7 +85,7 @@ The application was developed as both a personal blog and a portfolio project, w
 - Loading skeletons
 - Responsive desktop, tablet and mobile navigation
 
-##Architecture
+## Architecture
 
 The project uses the Next.js App Router and combines frontend and server-side functionality within the same application.
 
@@ -114,18 +114,18 @@ PostgreSQL (Neon)
 
 Images uploaded through the application are stored separately in Vercel Blob.
 
-##Database
+## Database
 
 The application uses PostgreSQL hosted on Neon.
 
 Main entities include:
 
-Posts
-Categories
-Tags
-Post–tag relationships
-Comments and replies
-Newsletter subscriptions
+- Posts
+- Categories
+- Tags
+- Post–tag relationships
+- Comments and replies
+- Newsletter subscriptions
 
 Posts belong to categories and can be associated with multiple tags.
 
@@ -235,12 +235,12 @@ http://localhost:3000
 
 ## Quality Checks
 
-Before creating a production release, the project can be validated with the following checks.
+The project uses automated quality checks to validate code quality, type safety, tests, formatting and the production build.
 
-### Tests
+### ESLint
 
 ```bash
-npm test
+npm run lint
 ```
 
 ## Author
