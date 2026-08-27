@@ -32,7 +32,7 @@ The application was developed as both a personal blog and a portfolio project, w
 ### Backend
 
 - Next.js Route Handlers
-- Neon PostgreSQL
+- PostgreSQL (Neon)
 - SQL
 - Nodemailer
 
@@ -40,7 +40,6 @@ The application was developed as both a personal blog and a portfolio project, w
 
 - Vercel
 - Vercel Blob
-- Neon Database
 
 ## Screenshots
 
@@ -62,42 +61,33 @@ The application was developed as both a personal blog and a portfolio project, w
 
 ## Features
 
-### Blog
+### Content & Discovery
 
-- Development and Travel articles
-- Individual post pages
-- Search by keyword
-- Category filtering
-- Tag filtering
-- Archive filtering by year and month
-- Pagination
-- Popular articles
-- Responsive layout for desktop, tablet and mobile
+- Development and travel articles
+- Dynamic article pages
+- Keyword search
+- Category and tag filtering
+- Archive navigation by year and month
+- Pagination and popular articles
 
 ### Post Interaction
 
-- Post likes
-- View counter
-- Comments
-- Nested comment replies
-- Optional avatar upload for comments
-- Comment count for each article
+- Likes and view tracking
+- Comments and nested replies
+- Optional comment avatars
+- Comment counts
 
-### Additional Features
+### Platform
 
 - Newsletter subscriptions
 - Contact form with email delivery
-- Dynamic SEO metadata for posts and pages
-- About and Contact pages
-- User visit tracking
+- Dynamic SEO metadata
 - Loading skeletons
-- Responsive navigation and mobile burger menu
+- Responsive desktop, tablet and mobile navigation
 
-## Architecture
+##Architecture
 
-The project uses the Next.js App Router architecture.
-
-The frontend and backend are part of the same Next.js application.
+The project uses the Next.js App Router and combines frontend and server-side functionality within the same application.
 
 ```text
 Browser
@@ -119,27 +109,27 @@ Next.js Route Handlers
    └── User Visits
    │
    ▼
-Neon PostgreSQL
+PostgreSQL (Neon)
 ```
 
-Images uploaded through the application are stored in Vercel Blob.
+Images uploaded through the application are stored separately in Vercel Blob.
 
-## Database
+##Database
 
 The application uses PostgreSQL hosted on Neon.
 
-The main entities include:
+Main entities include:
 
-- Posts
-- Categories
-- Tags
-- Post–tag relationships
-- Comments and replies
-- Newsletter subscriptions
+Posts
+Categories
+Tags
+Post–tag relationships
+Comments and replies
+Newsletter subscriptions
 
-Posts can belong to categories and contain multiple tags.
+Posts belong to categories and can be associated with multiple tags.
 
-Comments support parent-child relationships, allowing users to reply to existing comments.
+Comments use parent-child relationships, allowing nested replies to existing comments.
 
 ## Project Structure
 
@@ -243,33 +233,15 @@ Open:
 http://localhost:3000
 ```
 
-## Type Checking
+## Quality Checks
 
-Run TypeScript validation:
+Before creating a production release, the project can be validated with the following checks.
 
-```bash
-npx tsc --noEmit
-```
-
-## Production Build
-
-Create a production build:
+### Tests
 
 ```bash
-npm run build
+npm test
 ```
-
-## Future Improvements
-
-Possible future improvements include:
-
-- Admin dashboard for creating and editing posts
-- Authentication
-- Rich text editor for article creation
-- Comment moderation dashboard
-- Automated tests for more application features
-- Improved analytics
-- Draft and scheduled article publishing
 
 ## Author
 
