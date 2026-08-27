@@ -10,6 +10,38 @@ The application was developed as both a personal blog and a portfolio project, w
 
 🔗 [View the live website](https://blog-ten-rho-43.vercel.app)
 
+## Engineering Highlights
+
+- Migrated backend functionality into **Next.js Route Handlers**, keeping frontend and server-side logic within the same Next.js application.
+- Designed and worked with **PostgreSQL relational data** for posts, categories, tags, comments and nested replies.
+- Improved **TypeScript data contracts** between PostgreSQL/API responses and frontend models, resolving data-shape and type inconsistencies across application layers.
+- Implemented **search, category and tag filtering, pagination, and archive navigation** for dynamic blog content.
+- Built post interaction functionality including **comments, nested parent-child replies, likes, views and comment counts**.
+- Integrated **Vercel Blob** for image storage and deployed the application to production with Vercel.
+
+## Tech Stack
+
+### Frontend
+
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+- Lucide React
+
+### Backend
+
+- Next.js Route Handlers
+- Neon PostgreSQL
+- SQL
+- Nodemailer
+
+### Storage & Deployment
+
+- Vercel
+- Vercel Blob
+- Neon Database
+
 ## Screenshots
 
 ### Home
@@ -60,29 +92,6 @@ The application was developed as both a personal blog and a portfolio project, w
 - User visit tracking
 - Loading skeletons
 - Responsive navigation and mobile burger menu
-
-## Tech Stack
-
-### Frontend
-
-- Next.js
-- React
-- TypeScript
-- Tailwind CSS
-- Lucide React
-
-### Backend
-
-- Next.js Route Handlers
-- Neon PostgreSQL
-- SQL
-- Nodemailer
-
-### Storage & Deployment
-
-- Vercel
-- Vercel Blob
-- Neon Database
 
 ## Architecture
 
@@ -249,24 +258,6 @@ Create a production build:
 ```bash
 npm run build
 ```
-
-## What I Learned
-
-This project helped me improve my understanding of building a complete application with Next.js rather than only working on the frontend.
-
-Some of the main areas I worked on were:
-
-- Migrating backend functionality into Next.js
-- Working directly with PostgreSQL and SQL queries
-- Designing relationships between posts, categories, tags and comments
-- Creating API Route Handlers
-- Improving TypeScript types between database and UI layers
-- Building responsive layouts for different screen sizes
-- Handling image uploads with Vercel Blob
-- Implementing comments and nested replies
-- Working with environment variables securely
-- Building search, filtering, pagination and archives
-- Deploying and testing the application in production
 
 ## Future Improvements
 
