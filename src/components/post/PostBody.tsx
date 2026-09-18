@@ -58,11 +58,11 @@ const PostBody: React.FC<IPostBodyProps> = ({ post }) => {
     <>
       <SliderPost post={post} />
 
-      <h1 className="mb-4 text-3xl font-bold leading-tight text-gray-900 xs:text-center lg:text-left">
+      <h1 className="mb-5 text-3xl font-bold leading-tight text-gray-900 xs:text-center lg:text-left">
         {post.title}
       </h1>
 
-      <div className="mb-5 flex flex-wrap items-center gap-x-3 gap-y-1 text-gray-600">
+      <div className="mb-8 flex flex-wrap items-center gap-x-3 gap-y-1 text-gray-600">
         <p className="text-sm">
           <span className="font-black text-black">Author: </span>
           <span>{post.author?.name || "Unknown"}</span>
@@ -79,8 +79,8 @@ const PostBody: React.FC<IPostBodyProps> = ({ post }) => {
         </p>
       </div>
 
-      <div
-        className="mb-8 break-words text-left text-base leading-7 text-gray-700 md:text-lg md:leading-8 [&_pre]:whitespace-pre-wrap"
+      <article
+        className="mb-10 break-words text-left text-base leading-7 text-gray-700 md:text-lg md:leading-8 [&_a]:text-[#1eafed] [&_a]:underline-offset-4 hover:[&_a]:underline [&_blockquote]:my-6 [&_blockquote]:border-l-4 [&_blockquote]:border-gray-300 [&_blockquote]:pl-4 [&_blockquote]:italic [&_h2]:mb-4 [&_h2]:mt-10 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:leading-tight [&_h2]:text-gray-900 [&_h3]:mb-3 [&_h3]:mt-8 [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:text-gray-900 [&_li]:mb-2 [&_ol]:my-5 [&_ol]:list-decimal [&_ol]:pl-7 [&_p]:mb-5 [&_pre]:my-6 [&_pre]:overflow-x-auto [&_pre]:whitespace-pre-wrap [&_pre]:rounded-lg [&_pre]:bg-gray-100 [&_pre]:p-4 [&_strong]:font-semibold [&_strong]:text-gray-900 [&_ul]:my-5 [&_ul]:list-disc [&_ul]:pl-7"
         dangerouslySetInnerHTML={{
           __html: articleContent,
         }}
